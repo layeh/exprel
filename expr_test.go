@@ -116,6 +116,11 @@ func TestBaseLOWER(t *testing.T) {
 	testString(t, expr, "heythere", exprel.Base)
 }
 
+func TestBaseREPT(t *testing.T) {
+	expr := `=REPT("1"; 5)`
+	testString(t, expr, "11111", exprel.Base)
+}
+
 // testing helpers
 
 func testString(t *testing.T, expr, expected string, source exprel.Source) {

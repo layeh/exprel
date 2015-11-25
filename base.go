@@ -31,6 +31,9 @@ func init() {
 		},
 		"REPT": func(values ...interface{}) (interface{}, error) {
 			str, count := argSN("REPT", values...)
+			if count < 0 {
+				panic("REPT argument must be positive")
+			}
 			return strings.Repeat(str, int(count)), nil
 		},
 		"UPPER": func(values ...interface{}) (interface{}, error) {
