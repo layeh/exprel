@@ -188,11 +188,11 @@ func (p *parser) parseTerm() node {
 			case "TRUE":
 				p.next()
 				p.nextRune(tknClose)
-				return trueNode{}
+				return boolNode(true)
 			case "FALSE":
 				p.next()
 				p.nextRune(tknClose)
-				return falseNode{}
+				return boolNode(false)
 			case "NOT":
 				p.next()
 				expr := p.parseExpression()

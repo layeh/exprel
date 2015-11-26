@@ -253,18 +253,6 @@ func (n orNode) Evaluate(s Source) interface{} {
 	return false
 }
 
-type trueNode struct{}
-
-func (trueNode) Evaluate(s Source) interface{} {
-	return true
-}
-
-type falseNode struct{}
-
-func (falseNode) Evaluate(s Source) interface{} {
-	return false
-}
-
 type ifNode struct {
 	Cond  node
 	True  node
