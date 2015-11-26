@@ -33,7 +33,7 @@ type notNode struct {
 func (n *notNode) Evaluate(s Source) interface{} {
 	val, ok := n.node.Evaluate(s).(bool)
 	if !ok {
-		panic("expecting bool value")
+		re("NOT expects bool value")
 	}
 	return !val
 }
@@ -44,12 +44,12 @@ func (n lookupNode) Evaluate(s Source) interface{} {
 	id := string(n)
 	ret, ok := s.Get(id)
 	if !ok {
-		panic("unknown identifier " + id)
+		re("unknown identifier " + id)
 	}
 	switch ret.(type) {
 	case string, bool, float64:
 	default:
-		panic("invalid identifier type")
+		re("identifier '" + id + "' has invalid type")
 	}
 	return ret
 }
@@ -63,13 +63,13 @@ func (n *callNode) Evaluate(s Source) interface{} {
 	name := n.Name
 	fnValue, ok := s.Get(name)
 	if !ok {
-		panic("unknown function " + name)
+		re("unknown function " + name)
 	}
 	fn, ok := fnValue.(Func)
 	if !ok {
 		fn2, ok2 := fnValue.(func(values ...interface{}) (interface{}, error))
 		if !ok2 {
-			panic("cannot call non-function " + name)
+			re("cannot call non-function " + name)
 		}
 		fn = fn2
 	}
@@ -79,14 +79,15 @@ func (n *callNode) Evaluate(s Source) interface{} {
 	}
 	ret, err := fn(args...)
 	if err != nil {
-		panic(err)
+		panic(&RuntimeError{Err: err})
 	}
 	switch ret.(type) {
 	case string, bool, float64:
 		return ret
 	default:
-		panic("invalid function return type")
+		re("invalid function return type")
 	}
+	panic("never called")
 }
 
 type concatNode [2]node
@@ -94,11 +95,11 @@ type concatNode [2]node
 func (n concatNode) Evaluate(s Source) interface{} {
 	lhs, lhsOk := n[0].Evaluate(s).(string)
 	if !lhsOk {
-		panic("LHS not string type")
+		re("LHS of & must be string")
 	}
 	rhs, rhsOk := n[1].Evaluate(s).(string)
 	if !rhsOk {
-		panic("RHS not string type")
+		re("RHS of & must be string")
 	}
 	return lhs + rhs
 }
@@ -113,7 +114,7 @@ func (n *mathNode) Evaluate(s Source) interface{} {
 	lhs, lhsOK := n.LHS.Evaluate(s).(float64)
 	rhs, rhsOK := n.RHS.Evaluate(s).(float64)
 	if !lhsOK || !rhsOK {
-		panic("invalid " + string(n.Op) + " operands")
+		re("invalid " + string(n.Op) + " operands")
 	}
 	switch n.Op {
 	case tknAdd:
@@ -124,7 +125,7 @@ func (n *mathNode) Evaluate(s Source) interface{} {
 		return lhs * rhs
 	case tknDivide:
 		if rhs == 0 {
-			panic("attempted division by zero")
+			re("attempted division by zero")
 		}
 		return lhs / rhs
 	case tknPower:
@@ -149,9 +150,8 @@ func (n *eqNode) Evaluate(s Source) interface{} {
 		if aOK && bOK {
 			if n.Op == tknEquals {
 				return a == b
-			} else {
-				return a != b
 			}
+			return a != b
 		}
 	}
 	{
@@ -160,9 +160,8 @@ func (n *eqNode) Evaluate(s Source) interface{} {
 		if aOK && bOK {
 			if n.Op == tknEquals {
 				return a == b
-			} else {
-				return a != b
 			}
+			return a != b
 		}
 	}
 	{
@@ -171,12 +170,12 @@ func (n *eqNode) Evaluate(s Source) interface{} {
 		if aOK && bOK {
 			if n.Op == tknEquals {
 				return a == b
-			} else {
-				return a != b
 			}
+			return a != b
 		}
 	}
-	panic("mismatched comparison operands")
+	re("mismatched comparison operand types")
+	panic("never called")
 }
 
 type cmpNode struct {
@@ -220,7 +219,8 @@ func (n *cmpNode) Evaluate(s Source) interface{} {
 			}
 		}
 	}
-	panic("mismatched comparison operand types")
+	re("mismatched comparison operand types")
+	panic("never called")
 }
 
 type andNode []node
@@ -229,7 +229,7 @@ func (n andNode) Evaluate(s Source) interface{} {
 	for _, current := range n {
 		value, ok := current.Evaluate(s).(bool)
 		if !ok {
-			panic("non-bool in AND")
+			re("AND must have boolean arguments")
 		}
 		if !value {
 			return false
@@ -244,7 +244,7 @@ func (n orNode) Evaluate(s Source) interface{} {
 	for _, current := range n {
 		value, ok := current.Evaluate(s).(bool)
 		if !ok {
-			panic("non-bool in OR")
+			re("OR must have boolean arguments")
 		}
 		if value {
 			return true
@@ -274,7 +274,7 @@ type ifNode struct {
 func (n *ifNode) Evaluate(s Source) interface{} {
 	cond, ok := n.Cond.Evaluate(s).(bool)
 	if !ok {
-		panic("IF condition must be bool")
+		re("IF condition must be boolean")
 	}
 	if cond {
 		return n.True.Evaluate(s)

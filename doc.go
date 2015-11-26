@@ -2,11 +2,22 @@
 //
 // Introduction
 //
-// All expressions return a single value.
+// All expressions return a single value. Here are a few examples of some valid
+// expressions and their return values:
+//  Expression                        Return value
+//  ----------------------------------------------
+//  Hey there                         "Hey there"
+//  1234                              "1234"
+//  =5+5*2                            15
+//  ="A" & " " & "B"                  "A B"
+//  =IF(AND(NOT(FALSE());1=1);1+2;2)  3
+//
+// Expressions with logic must start with an equals sign (=). Otherwise, the
+// return value is simply the source string.
 //
 // Values
 //
-// The following values are can be returned and used by an expression:
+// The following values are can be returned by and used in an expression:
 //  string
 //  float64
 //  bool
@@ -20,7 +31,7 @@
 // The following operators and built-ins are defined:
 //                  Usage         Operand type   Notes
 //  --------------------------------------------------
-//  Addition        a + b         float6
+//  Addition        a + b         float64
 //  Subtraction     a - b         float64
 //  Multiplication  a * b         float64
 //  Divition        a / b         float64

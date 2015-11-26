@@ -1,9 +1,5 @@
 package exprel
 
-import (
-	"errors"
-)
-
 // Expression is an user-defined expression that can be evaluated.
 type Expression struct {
 	node node
@@ -16,7 +12,10 @@ type Expression struct {
 // are returned.
 func Parse(s string) (*Expression, error) {
 	if len(s) == 0 {
-		return nil, errors.New("exprel: empty expression")
+		return nil, &SyntaxError{
+			Message:  "empty expression",
+			Position: 0,
+		}
 	}
 	// simple expression; nothing to parse
 	if s[0] != '=' {
@@ -39,7 +38,15 @@ func Parse(s string) (*Expression, error) {
 //
 // Upon success, value and nil are returned. Upon failure, nil and error are
 // returned.
-func (e *Expression) Evaluate(s Source) (interface{}, error) {
-	// TODO: panic handling
+func (e *Expression) Evaluate(s Source) (val interface{}, err error) {
+	defer func() {
+		if rec := recover(); rec != nil {
+			if runtimeErr, ok := rec.(*RuntimeError); ok {
+				err = runtimeErr
+				return
+			}
+			panic(rec)
+		}
+	}()
 	return e.node.Evaluate(s), nil
 }

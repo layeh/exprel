@@ -32,7 +32,7 @@ func init() {
 		"REPT": func(values ...interface{}) (interface{}, error) {
 			str, count := argSN("REPT", values...)
 			if count < 0 {
-				panic("REPT argument must be positive")
+				re("REPT argument must be positive")
 			}
 			return strings.Repeat(str, int(count)), nil
 		},
@@ -47,40 +47,40 @@ func init() {
 
 func argS(name string, values ...interface{}) string {
 	if len(values) != 1 {
-		panic(name + " expects a string argument")
+		re(name + " expects a string argument")
 	}
 	value, ok := values[0].(string)
 	if !ok {
-		panic(name + " expects a string argument")
+		re(name + " expects a string argument")
 	}
 	return value
 }
 
 func argN(name string, values ...interface{}) float64 {
 	if len(values) != 1 {
-		panic(name + " expects a number argument")
+		re(name + " expects a number argument")
 	}
 	value, ok := values[0].(float64)
 	if !ok {
-		panic(name + " expects a number argument")
+		re(name + " expects a number argument")
 	}
 	return value
 }
 
 func argSN(name string, values ...interface{}) (string, float64) {
 	if len(values) != 2 {
-		panic(name + " expects a string and a number argument")
+		re(name + " expects a string and a number argument")
 	}
 	str, strOk := values[0].(string)
 	number, numberOk := values[1].(float64)
 	if !strOk || !numberOk {
-		panic(name + " expects a string and a number argument")
+		re(name + " expects a string and a number argument")
 	}
 	return str, number
 }
 
 func arg(name string, values ...interface{}) {
 	if len(values) != 0 {
-		panic(name + " expects no arguments")
+		re(name + " expects no arguments")
 	}
 }

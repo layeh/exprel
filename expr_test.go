@@ -2,6 +2,7 @@ package exprel_test
 
 import (
 	"errors"
+	"regexp"
 	"testing"
 
 	"github.com/layeh/exprel"
@@ -10,6 +11,16 @@ import (
 func TestSimple(t *testing.T) {
 	expr := `Hello World!`
 	testString(t, expr, "Hello World!", nil)
+}
+
+func TestErrSyntax(t *testing.T) {
+	expr := `=5 + $`
+	testSyntaxError(t, expr, "expected character", nil)
+}
+
+func TestErrRuntime(t *testing.T) {
+	expr := `=5 + "hello"`
+	testRuntimeError(t, expr, "invalid.*operand", nil)
 }
 
 func TestConcat(t *testing.T) {
@@ -23,8 +34,8 @@ func TestSingleNumber(t *testing.T) {
 }
 
 func TestNumberExpression(t *testing.T) {
-	expr := `=(5+5)*2/0.5`
-	testNumber(t, expr, (5+5)*2/0.5, nil)
+	expr := `=5+5*2/0.5`
+	testNumber(t, expr, 5+5*2/0.5, nil)
 }
 
 func TestSimpleIf(t *testing.T) {
@@ -122,6 +133,46 @@ func TestBaseREPT(t *testing.T) {
 }
 
 // testing helpers
+
+func testSyntaxError(t *testing.T, expr, messageRegex string, source exprel.Source) {
+	_, err := exprel.Parse(expr)
+	if err == nil {
+		t.Fatalf("expecting parsing error\n")
+	}
+	syntaxErr, ok := err.(*exprel.SyntaxError)
+	if !ok {
+		t.Fatalf("expecting syntax error\n")
+	}
+	matched, err := regexp.MatchString(messageRegex, syntaxErr.Message)
+	if err != nil {
+		panic(err)
+	}
+	if !matched {
+		t.Fatalf("error message does not match (regex `%s`, got `%s`)", messageRegex, syntaxErr.Message)
+	}
+}
+
+func testRuntimeError(t *testing.T, expr, messageRegex string, source exprel.Source) {
+	e, err := exprel.Parse(expr)
+	if err != nil {
+		t.Fatalf("could not parse expression: %s\n", err)
+	}
+	_, err = e.Evaluate(source)
+	if err == nil {
+		t.Fatalf("expecting runtime error\n")
+	}
+	runtimeErr, ok := err.(*exprel.RuntimeError)
+	if !ok {
+		t.Fatalf("expecting runtime error\n")
+	}
+	matched, err := regexp.MatchString(messageRegex, runtimeErr.Message)
+	if err != nil {
+		panic(err)
+	}
+	if !matched {
+		t.Fatalf("error message does not match (regex `%s`, got `%s`)", messageRegex, runtimeErr.Message)
+	}
+}
 
 func testString(t *testing.T, expr, expected string, source exprel.Source) {
 	e, err := exprel.Parse(expr)

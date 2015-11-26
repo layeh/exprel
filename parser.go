@@ -1,9 +1,5 @@
 package exprel
 
-import (
-	"errors"
-)
-
 type parser struct {
 	Node node
 
@@ -15,10 +11,13 @@ func parseString(s string) (n node, err error) {
 	p := &parser{
 		l: newLexer(s),
 	}
-	// TODO: fix recover
 	defer func() {
 		if rec := recover(); rec != nil {
-			err = errors.New(rec.(string))
+			if syntaxErr, ok := rec.(*SyntaxError); ok {
+				err = syntaxErr
+				return
+			}
+			panic(rec)
 		}
 	}()
 	n = p.parseProgram()
@@ -31,18 +30,16 @@ func (p *parser) next() interface{} {
 		p.lastTkn = nil
 		return tkn
 	}
-
-	tkn, err := p.l.Next()
-	if err != nil {
-		panic(err)
-	}
-	return tkn
+	return p.l.Next()
 }
 
 func (p *parser) nextRune(expecting rune) {
 	r, ok := p.next().(rune)
 	if !ok || r != expecting {
-		panic("expecting " + string(expecting))
+		panic(&SyntaxError{
+			Message:  "expecting '" + string(expecting) + "'",
+			Position: p.l.pos(),
+		})
 	}
 }
 
@@ -50,9 +47,11 @@ func (p *parser) peek() interface{} {
 	if p.lastTkn != nil {
 		return p.lastTkn
 	}
-	tkn, _ := p.l.Next()
-	p.lastTkn = tkn
-	return tkn
+	defer func() {
+		recover()
+	}()
+	p.lastTkn = p.l.Next()
+	return p.lastTkn
 }
 
 func (p *parser) peekRune(expecting rune) bool {
@@ -68,7 +67,10 @@ func (p *parser) peekRune(expecting rune) bool {
 func (p *parser) parseProgram() node {
 	expr := p.parseExpression()
 	if p.l.HasNext() {
-		panic("expecting EOF")
+		panic(&SyntaxError{
+			Message:  "expecting EOF",
+			Position: p.l.pos(),
+		})
 	}
 	return expr
 }
@@ -159,11 +161,17 @@ func (p *parser) parseTerm() node {
 		case tknSubtract:
 			num, ok := p.next().(float64)
 			if !ok {
-				panic("expecting number")
+				panic(&SyntaxError{
+					Message:  "expecting number",
+					Position: p.l.pos(),
+				})
 			}
 			return numberNode(-num)
 		default:
-			panic("unexpected " + string(v))
+			panic(&SyntaxError{
+				Message:  "unexpected '" + string(v) + "'",
+				Position: p.l.pos(),
+			})
 		}
 	case identifier:
 		if p.peekRune(tknOpen) {
@@ -243,6 +251,9 @@ func (p *parser) parseTerm() node {
 	case float64:
 		return numberNode(v)
 	default:
-		panic("unexpected token")
+		panic(&SyntaxError{
+			Message:  "expecting token",
+			Position: p.l.pos(),
+		})
 	}
 }

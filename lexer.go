@@ -1,8 +1,6 @@
 package exprel
 
 import (
-	"errors"
-	"io"
 	"strconv"
 	"strings"
 	"unicode"
@@ -60,15 +58,22 @@ func (l *lexer) HasNext() bool {
 	return l.R.Len() > 0
 }
 
+func (l *lexer) pos() int {
+	return int(l.R.Size()) - l.R.Len()
+}
+
 // type:
 //  identifier -> Identifier
 //  string     -> String
 //  float64    -> Number
 //  rune       -> Token
-func (l *lexer) Next() (interface{}, error) {
+func (l *lexer) Next() interface{} {
 	if l.R.Len() == 0 {
 		// empty reader
-		return nil, io.EOF
+		panic(&SyntaxError{
+			Message:  "unexpected EOF",
+			Position: l.pos(),
+		})
 	}
 	defer l.skipWhitespace()
 
@@ -76,56 +81,47 @@ func (l *lexer) Next() (interface{}, error) {
 	switch {
 	case r == tknAdd, r == tknSubtract, r == tknMultiply, r == tknDivide, r == tknPower, r == tknEquals, r == tknConcat, r == tknSep, r == tknOpen, r == tknClose:
 		// simple operators
-		return r, nil
+		return r
 	case r == tknGreater:
 		// greater than, greater than or equal
 		peek, _, err := l.R.ReadRune()
 		if err != nil || peek != '=' {
 			l.R.UnreadRune()
-			return r, nil
+			return r
 		}
-		return tknGreaterEqual, nil
+		return tknGreaterEqual
 	case r == tknLess:
 		// less than, less than or equal, not equal
 		peek, _, err := l.R.ReadRune()
 		if err != nil || (peek != tknEquals && peek != tknGreater) {
 			l.R.UnreadRune()
-			return r, nil
+			return r
 		}
 		if peek == tknEquals {
-			return tknLessEqual, nil
+			return tknLessEqual
 		}
-		return tknInequal, nil
+		return tknInequal
 	case unicode.IsDigit(r):
 		// number
 		l.R.UnreadRune()
-		num, err := l.nextNumber()
-		if err != nil {
-			return nil, err
-		}
-		return num, nil
+		return l.nextNumber()
 	case unicode.IsLetter(r):
 		// identifier
 		l.R.UnreadRune()
-		id, err := l.nextIdentifier()
-		if err != nil {
-			return nil, err
-		}
-		return id, nil
+		return l.nextIdentifier()
 	case r == '"':
 		// string
 		l.R.UnreadRune()
-		str, err := l.nextString()
-		if err != nil {
-			return nil, err
-		}
-		return str, nil
+		return l.nextString()
 	default:
-		return nil, errors.New("unknown character")
+		panic(&SyntaxError{
+			Message:  "unexpected character '" + string(r) + "'",
+			Position: l.pos(),
+		})
 	}
 }
 
-func (l *lexer) nextIdentifier() (interface{}, error) {
+func (l *lexer) nextIdentifier() interface{} {
 	r, _, _ := l.R.ReadRune()
 	chars := []rune{r}
 	for {
@@ -136,21 +132,27 @@ func (l *lexer) nextIdentifier() (interface{}, error) {
 		}
 		chars = append(chars, r)
 	}
-	return identifier(chars), nil
+	return identifier(chars)
 }
 
-func (l *lexer) nextString() (interface{}, error) {
+func (l *lexer) nextString() interface{} {
 	r, _, _ := l.R.ReadRune()
 	chars := []rune{r}
 	for {
 		r, _, err := l.R.ReadRune()
 		if err != nil {
-			return nil, err
+			panic(&SyntaxError{
+				Message:  "unexpected EOF",
+				Position: l.pos(),
+			})
 		}
 		if r == '\\' {
 			peek, _, err := l.R.ReadRune()
 			if err != nil {
-				return nil, err
+				panic(&SyntaxError{
+					Message:  "unexpected EOF",
+					Position: l.pos(),
+				})
 			}
 			if peek == '"' {
 				chars = append(chars, r, peek)
@@ -163,10 +165,17 @@ func (l *lexer) nextString() (interface{}, error) {
 			break
 		}
 	}
-	return strconv.Unquote(string(chars))
+	str, err := strconv.Unquote(string(chars))
+	if err != nil {
+		panic(&SyntaxError{
+			Message:  err.Error(),
+			Position: l.pos(),
+		})
+	}
+	return str
 }
 
-func (l *lexer) nextNumber() (interface{}, error) {
+func (l *lexer) nextNumber() interface{} {
 	r, _, _ := l.R.ReadRune()
 	chars := []rune{r}
 	hasDecimal := false
@@ -183,5 +192,12 @@ func (l *lexer) nextNumber() (interface{}, error) {
 			break
 		}
 	}
-	return strconv.ParseFloat(string(chars), 64)
+	number, err := strconv.ParseFloat(string(chars), 64)
+	if err != nil {
+		panic(&SyntaxError{
+			Message:  err.Error(),
+			Position: l.pos(),
+		})
+	}
+	return number
 }
