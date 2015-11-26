@@ -51,6 +51,7 @@
 // The following functions are defined as part of Base:
 //             Argument type    Return type
 //  ---------------------------------------
+//  ABS(a)     float64          float64
 //  EXP(a)     float64          float64
 //  PI()                        float64
 //

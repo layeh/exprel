@@ -11,6 +11,10 @@ var Base Source
 func init() {
 	Base = SourceMap{
 		// Math
+		"ABS": func(values ...interface{}) (interface{}, error) {
+			number := argN("ABS", values...)
+			return math.Abs(number), nil
+		},
 		"EXP": func(values ...interface{}) (interface{}, error) {
 			number := argN("EXP", values...)
 			return math.Exp(number), nil

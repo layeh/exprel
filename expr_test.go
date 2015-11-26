@@ -111,6 +111,12 @@ func TestBuiltinNOT(t *testing.T) {
 	expr := `=NOT(TRUE())`
 	testBool(t, expr, false, nil)
 }
+
+func TestBaseABS(t *testing.T) {
+	expr := `=ABS(-342)`
+	testNumber(t, expr, 342, exprel.Base)
+}
+
 func TestBaseLEN(t *testing.T) {
 	expr := `=LEN("hélloworld")`
 	testNumber(t, expr, float64(len("hélloworld")), exprel.Base)
