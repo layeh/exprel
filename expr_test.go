@@ -111,12 +111,6 @@ func TestBuiltinNOT(t *testing.T) {
 	expr := `=NOT(TRUE())`
 	testBool(t, expr, false, nil)
 }
-
-func TestBaseUPPER(t *testing.T) {
-	expr := `=UPPER("hey" & "THERE")`
-	testString(t, expr, "HEYTHERE", exprel.Base)
-}
-
 func TestBaseLEN(t *testing.T) {
 	expr := `=LEN("hélloworld")`
 	testNumber(t, expr, float64(len("hélloworld")), exprel.Base)
@@ -130,6 +124,16 @@ func TestBaseLOWER(t *testing.T) {
 func TestBaseREPT(t *testing.T) {
 	expr := `=REPT("1"; 5)`
 	testString(t, expr, "11111", exprel.Base)
+}
+
+func TestBaseTRIM(t *testing.T) {
+	expr := `=TRIM(" hello  world   ")`
+	testString(t, expr, "hello  world", exprel.Base)
+}
+
+func TestBaseUPPER(t *testing.T) {
+	expr := `=UPPER("hey" & "THERE")`
+	testString(t, expr, "HEYTHERE", exprel.Base)
 }
 
 // testing helpers

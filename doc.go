@@ -57,6 +57,7 @@
 //  LEN(a)     string           float64
 //  LOWER(a)   string           string
 //  REPT(a;b)  string, float64  string
+//  TRIM(a)    string           string
 //  UPPER(a)   string           string
 //
 package exprel

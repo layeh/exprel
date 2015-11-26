@@ -36,6 +36,10 @@ func init() {
 			}
 			return strings.Repeat(str, int(count)), nil
 		},
+		"TRIM": func(values ...interface{}) (interface{}, error) {
+			str := argS("TRIM", values...)
+			return strings.TrimSpace(str), nil
+		},
 		"UPPER": func(values ...interface{}) (interface{}, error) {
 			str := argS("UPPER", values...)
 			return strings.ToUpper(str), nil
