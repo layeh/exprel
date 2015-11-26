@@ -2,6 +2,7 @@ package exprel
 
 import (
 	"math"
+	"math/rand"
 	"strings"
 )
 
@@ -22,6 +23,10 @@ func init() {
 		"PI": func(values ...interface{}) (interface{}, error) {
 			arg("PI", values...)
 			return float64(math.Pi), nil
+		},
+		"RAND": func(values ...interface{}) (interface{}, error) {
+			arg("RAND", values...)
+			return rand.Float64(), nil
 		},
 
 		// Strings

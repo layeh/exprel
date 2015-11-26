@@ -54,6 +54,7 @@
 //  ABS(a)     float64          float64
 //  EXP(a)     float64          float64
 //  PI()                        float64
+//  RAND()                      float64
 //
 //  LEN(a)     string           float64
 //  LOWER(a)   string           string
