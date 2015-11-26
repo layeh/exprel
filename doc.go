@@ -49,17 +49,19 @@
 //
 //
 // The following functions are defined as part of Base:
-//             Argument type    Return type
-//  ---------------------------------------
-//  ABS(a)     float64          float64
-//  EXP(a)     float64          float64
-//  PI()                        float64
-//  RAND()                      float64
+//                         Argument type    Return type
+//  ---------------------------------------------------
+//  CHOOSE(index;a;b;...)  float64, ANY...  ANY
 //
-//  LEN(a)     string           float64
-//  LOWER(a)   string           string
-//  REPT(a;b)  string, float64  string
-//  TRIM(a)    string           string
-//  UPPER(a)   string           string
+//  ABS(a)                 float64          float64
+//  EXP(a)                 float64          float64
+//  PI()                                    float64
+//  RAND()                                  float64
+//
+//  LEN(a)                 string           float64
+//  LOWER(a)               string           string
+//  REPT(a;b)              string, float64  string
+//  TRIM(a)                string           string
+//  UPPER(a)               string           string
 //
 package exprel

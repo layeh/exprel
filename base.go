@@ -11,6 +11,16 @@ var Base Source
 
 func init() {
 	Base = SourceMap{
+		// Etc.
+		"CHOOSE": func(values ...interface{}) (interface{}, error) {
+			number, rest := argNRest("CHOOSE", values...)
+			index := int(number)
+			if index < 0 || index >= len(rest) {
+				re("CHOOSE index out of range")
+			}
+			return rest[index], nil
+		},
+
 		// Math
 		"ABS": func(values ...interface{}) (interface{}, error) {
 			number := argN("ABS", values...)
@@ -78,6 +88,17 @@ func argN(name string, values ...interface{}) float64 {
 		re(name + " expects a number argument")
 	}
 	return value
+}
+
+func argNRest(name string, values ...interface{}) (float64, []interface{}) {
+	if len(values) < 1 {
+		re(name + " expects at least one number argument")
+	}
+	value, ok := values[0].(float64)
+	if !ok {
+		re(name + " expects at least one number argument")
+	}
+	return value, values[1:]
 }
 
 func argSN(name string, values ...interface{}) (string, float64) {

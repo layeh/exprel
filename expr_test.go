@@ -112,6 +112,11 @@ func TestBuiltinNOT(t *testing.T) {
 	testBool(t, expr, false, nil)
 }
 
+func TestBaseCHOOSE(t *testing.T) {
+	expr := `=CHOOSE(1; 10; 20; 30)`
+	testNumber(t, expr, 20, exprel.Base)
+}
+
 func TestBaseABS(t *testing.T) {
 	expr := `=ABS(-342)`
 	testNumber(t, expr, 342, exprel.Base)
