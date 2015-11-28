@@ -1,5 +1,20 @@
 // Package exprel provides a Spreadsheet-like expression evaluator.
 //
+// Quick start
+//
+//   import (
+//     "github.com/layeh/exprel"
+//   )
+//
+//   data := map[string]interface{}{
+//     "name": "Tim",
+//   }
+//   result, err := exprel.Evaluate(`=LOWER(name) & ".jpg"`, exprel.SourceMap(data))
+//   if err != nil {
+//     panic(err)
+//   }
+//   filename := result.(string) // tim.jpg
+//
 // Introduction
 //
 // All expressions return a single value. Here are a few examples of some valid

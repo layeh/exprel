@@ -50,3 +50,23 @@ func (e *Expression) Evaluate(s Source) (val interface{}, err error) {
 	}()
 	return e.node.Evaluate(s), nil
 }
+
+// Evaluate parses the given string and evaluates it with the given sources
+// (Base is automatically included).
+//
+// Upon success, value and nil are returned. Upon failure, nil and error are
+// returned.
+func Evaluate(s string, source ...Source) (val interface{}, err error) {
+	expr, err := Parse(s)
+	if err != nil {
+		return nil, err
+	}
+	data := make(Sources, len(source)+1)
+	data[0] = Base
+	copy(data[1:], source)
+	result, err := expr.Evaluate(data)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}

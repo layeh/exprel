@@ -13,6 +13,21 @@ func TestSimple(t *testing.T) {
 	testString(t, expr, "Hello World!", nil)
 }
 
+func TestEvaluate(t *testing.T) {
+	data := map[string]interface{}{
+		"name": "Tim",
+	}
+	result, err := exprel.Evaluate(`=LOWER(name) & ".jpg"`, exprel.SourceMap(data))
+	if err != nil {
+		t.Fatal(err)
+	}
+	filename := result.(string)
+	const expecting = "tim.jpg"
+	if filename != expecting {
+		t.Fatalf("got %s, expecting %s\n", filename, expecting)
+	}
+}
+
 func TestErrSyntax(t *testing.T) {
 	expr := `=5 + $`
 	testSyntaxError(t, expr, "expected character", nil)
