@@ -1,7 +1,58 @@
 package exprel
 
+import (
+	"strconv"
+)
+
 // Func is a function that can be executed from an Expression.
-type Func func(values ...interface{}) (interface{}, error)
+type Func func(call *Call) (interface{}, error)
+
+// Call contains information about an expression function call.
+type Call struct {
+	// The name used to invoke the function.
+	Name string
+	// The arguments passed to the function.
+	Values []interface{}
+}
+
+// String returns the ith argument, iff it is a string. Otherwise, the function
+// panics with a runtime error.
+func (c *Call) String(i int) string {
+	if len(c.Values) <= i {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
+	}
+	value, ok := c.Values[i].(string)
+	if !ok {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
+	}
+	return value
+}
+
+// Number returns the ith argument, iff it is a float64. Otherwise, the
+// function panics with a runtime error.
+func (c *Call) Number(i int) float64 {
+	if len(c.Values) <= i {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
+	}
+	value, ok := c.Values[i].(float64)
+	if !ok {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
+	}
+	return value
+}
+
+// Boolean returns the ith argument, iff it is a bool. Otherwise, the function
+// panics with a runtime error.
+func (c *Call) Boolean(i int) bool {
+	if len(c.Values) <= i {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+	}
+	value, ok := c.Values[i].(bool)
+	if !ok {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+	}
+	return value
+}
 
 // Source is a source of data for an expression. Get is called when an
 // identifier needs to be evaluated.
@@ -40,7 +91,7 @@ func (m SourceMap) Get(name string) (interface{}, bool) {
 		return nil, false
 	}
 	switch value.(type) {
-	case bool, string, float64, Func, func(values ...interface{}) (interface{}, error):
+	case bool, string, float64, Func, func(*Call) (interface{}, error):
 		return value, true
 	default:
 		return nil, false

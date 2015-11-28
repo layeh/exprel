@@ -67,17 +67,20 @@ func (n *callNode) Evaluate(s Source) interface{} {
 	}
 	fn, ok := fnValue.(Func)
 	if !ok {
-		fn2, ok2 := fnValue.(func(values ...interface{}) (interface{}, error))
+		fn2, ok2 := fnValue.(func(*Call) (interface{}, error))
 		if !ok2 {
 			re("cannot call non-function " + name)
 		}
 		fn = fn2
 	}
-	args := make([]interface{}, len(n.Args))
-	for i, arg := range n.Args {
-		args[i] = arg.Evaluate(s)
+	call := Call{
+		Name:   name,
+		Values: make([]interface{}, len(n.Args)),
 	}
-	ret, err := fn(args...)
+	for i, arg := range n.Args {
+		call.Values[i] = arg.Evaluate(s)
+	}
+	ret, err := fn(&call)
 	if err != nil {
 		panic(&RuntimeError{Err: err})
 	}

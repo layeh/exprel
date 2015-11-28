@@ -24,7 +24,7 @@
 //
 // Sources may also return the following type, which defines a function that
 // can be called from an expression:
-//  func(arguments ...interface{}) (value interface{}, ok bool)
+//  func(c *Call) (value interface{}, ok bool)
 //
 // Operators
 //

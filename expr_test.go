@@ -65,7 +65,7 @@ func TestAnd(t *testing.T) {
 
 func TestOrShort(t *testing.T) {
 	fns := exprel.SourceMap{
-		"FUNC": func(...interface{}) (interface{}, error) {
+		"FUNC": func(*exprel.Call) (interface{}, error) {
 			return nil, errors.New("FUNC should not be called")
 		},
 	}
@@ -75,7 +75,7 @@ func TestOrShort(t *testing.T) {
 
 func TestOr(t *testing.T) {
 	fns := exprel.SourceMap{
-		"FUNC": func(...interface{}) (interface{}, error) {
+		"FUNC": func(*exprel.Call) (interface{}, error) {
 			return false, nil
 		},
 	}
@@ -90,7 +90,7 @@ func TestUnaryMinus(t *testing.T) {
 
 func TestNoArgFunction(t *testing.T) {
 	fns := exprel.SourceMap{
-		"SAYHELLO": func(...interface{}) (interface{}, error) {
+		"SAYHELLO": func(*exprel.Call) (interface{}, error) {
 			return "Hello World!", nil
 		},
 	}
