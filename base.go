@@ -39,6 +39,14 @@ func init() {
 		},
 
 		// Strings
+		"LEFT": func(c *Call) (interface{}, error) {
+			str := c.String(0)
+			count := int(c.OptNumber(1, 1))
+			if count > len(str) {
+				return str, nil
+			}
+			return str[:count], nil
+		},
 		"LEN": func(c *Call) (interface{}, error) {
 			str := c.String(0)
 			return float64(len(str)), nil

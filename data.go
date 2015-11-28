@@ -16,7 +16,7 @@ type Call struct {
 }
 
 // String returns the ith argument, iff it is a string. Otherwise, the function
-// panics with a runtime error.
+// panics with a *RuntimeError.
 func (c *Call) String(i int) string {
 	if len(c.Values) <= i {
 		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
@@ -28,8 +28,22 @@ func (c *Call) String(i int) string {
 	return value
 }
 
+// OptString returns the ith argument, iff it is a string. If the ith argument
+// does not exist, def is returned. If the ith argument is not a string, the
+// function panics with a *RuntimeError.
+func (c *Call) OptString(i int, def string) string {
+	if len(c.Values) <= i {
+		return def
+	}
+	value, ok := c.Values[i].(string)
+	if !ok {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
+	}
+	return value
+}
+
 // Number returns the ith argument, iff it is a float64. Otherwise, the
-// function panics with a runtime error.
+// function panics with a *RuntimeError.
 func (c *Call) Number(i int) float64 {
 	if len(c.Values) <= i {
 		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
@@ -41,11 +55,39 @@ func (c *Call) Number(i int) float64 {
 	return value
 }
 
+// OptNumber returns the ith argument, iff it is a float64. If the ith argument
+// does not exist, def is returned. If the ith argument is not a number, the
+// function panics with a *RuntimeError.
+func (c *Call) OptNumber(i int, def float64) float64 {
+	if len(c.Values) <= i {
+		return def
+	}
+	value, ok := c.Values[i].(float64)
+	if !ok {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
+	}
+	return value
+}
+
 // Boolean returns the ith argument, iff it is a bool. Otherwise, the function
-// panics with a runtime error.
+// panics with a *RuntimeError.
 func (c *Call) Boolean(i int) bool {
 	if len(c.Values) <= i {
 		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+	}
+	value, ok := c.Values[i].(bool)
+	if !ok {
+		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+	}
+	return value
+}
+
+// OptBoolean returns the ith argument, iff it is a bool. If the ith argument
+// does not exist, def is returned. If the ith argument is not a bool, the
+// function panics with a *RuntimeError.
+func (c *Call) OptBoolean(i int, def bool) bool {
+	if len(c.Values) <= i {
+		return def
 	}
 	value, ok := c.Values[i].(bool)
 	if !ok {

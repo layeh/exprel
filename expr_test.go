@@ -122,6 +122,14 @@ func TestBaseABS(t *testing.T) {
 	testNumber(t, expr, 342, exprel.Base)
 }
 
+func TestBaseLEFT(t *testing.T) {
+	expr := `=LEFT("hello")`
+	testString(t, expr, "h", exprel.Base)
+
+	expr = `=LEFT("hello";10)`
+	testString(t, expr, "hello", exprel.Base)
+}
+
 func TestBaseLEN(t *testing.T) {
 	expr := `=LEN("hélloworld")`
 	testNumber(t, expr, float64(len("hélloworld")), exprel.Base)
