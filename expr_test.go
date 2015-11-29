@@ -132,6 +132,17 @@ func TestBaseCHOOSE(t *testing.T) {
 	testNumber(t, expr, 20, exprel.Base)
 }
 
+func TestBaseTYPE(t *testing.T) {
+	expr := `=TYPE(123)`
+	testNumber(t, expr, 1, exprel.Base)
+
+	expr = `=TYPE("hello")`
+	testNumber(t, expr, 2, exprel.Base)
+
+	expr = `=TYPE(TRUE())`
+	testNumber(t, expr, 4, exprel.Base)
+}
+
 func TestBaseABS(t *testing.T) {
 	expr := `=ABS(-342)`
 	testNumber(t, expr, 342, exprel.Base)

@@ -22,6 +22,21 @@ func init() {
 			}
 			return rest[index], nil
 		},
+		"TYPE": func(c *Call) (interface{}, error) {
+			if len(c.Values) < 1 {
+				re("TYPE requires one argument")
+			}
+			switch c.Values[0].(type) {
+			case float64:
+				return float64(1), nil
+			case string:
+				return float64(2), nil
+			case bool:
+				return float64(4), nil
+			default:
+				panic("never reached")
+			}
+		},
 
 		// Math
 		"ABS": func(c *Call) (interface{}, error) {

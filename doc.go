@@ -67,6 +67,7 @@
 //                         Argument type    Return type
 //  ---------------------------------------------------
 //  CHOOSE(index;a;b;...)  float64, ANY...  ANY
+//  TYPE(a)                ANY              float64
 //
 //  ABS(a)                 float64          float64
 //  EXP(a)                 float64          float64
