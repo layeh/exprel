@@ -176,6 +176,17 @@ func TestBaseREPT(t *testing.T) {
 	testString(t, expr, "11111", exprel.Base)
 }
 
+func TestBaseRIGHT(t *testing.T) {
+	expr := `=RIGHT("hello")`
+	testString(t, expr, "o", exprel.Base)
+
+	expr = `=RIGHT("hello";3)`
+	testString(t, expr, "llo", exprel.Base)
+
+	expr = `=RIGHT("hello";10)`
+	testString(t, expr, "hello", exprel.Base)
+}
+
 func TestBaseTRIM(t *testing.T) {
 	expr := `=TRIM(" hello  world   ")`
 	testString(t, expr, "hello  world", exprel.Base)

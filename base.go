@@ -90,6 +90,14 @@ func init() {
 			}
 			return strings.Repeat(str, int(count)), nil
 		},
+		"RIGHT": func(c *Call) (interface{}, error) {
+			str := c.String(0)
+			count := int(c.OptNumber(1, 1))
+			if count > len(str) {
+				return str, nil
+			}
+			return str[len(str)-count:], nil
+		},
 		"TRIM": func(c *Call) (interface{}, error) {
 			str := c.String(0)
 			return strings.TrimSpace(str), nil
