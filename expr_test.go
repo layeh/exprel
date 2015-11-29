@@ -145,6 +145,14 @@ func TestBaseCHAR(t *testing.T) {
 	testString(t, expr, "", exprel.Base)
 }
 
+func TestBaseJOIN(t *testing.T) {
+	expr := `=JOIN(", "; "a"; "b"; "c")`
+	testString(t, expr, "a, b, c", exprel.Base)
+
+	expr = `=JOIN("!!!")`
+	testString(t, expr, "", exprel.Base)
+}
+
 func TestBaseLEFT(t *testing.T) {
 	expr := `=LEFT("hello")`
 	testString(t, expr, "h", exprel.Base)
@@ -234,7 +242,7 @@ func testString(t *testing.T, expr, expected string, source exprel.Source) {
 		t.Fatalf("expression result should be string\n")
 	}
 	if val != expected {
-		t.Fatalf("incorrect value (expecting %s, got %s)\n", expected, val)
+		t.Fatalf("incorrect value (expecting `%s`, got `%s`)\n", expected, val)
 	}
 }
 

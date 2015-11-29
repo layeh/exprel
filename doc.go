@@ -74,6 +74,8 @@
 //  RAND()                                  float64
 //
 //  CHAR(...)              float64          string
+//  JOIN(sep;...)          string...        string
+//  LEFT(str;a)            string, float64  string
 //  LEN(a)                 string           float64
 //  LOWER(a)               string           string
 //  REPT(a;b)              string, float64  string

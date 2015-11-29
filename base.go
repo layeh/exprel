@@ -1,6 +1,7 @@
 package exprel
 
 import (
+	"bytes"
 	"math"
 	"math/rand"
 	"strings"
@@ -49,6 +50,21 @@ func init() {
 				r = append(r, rune(code))
 			}
 			return string(r), nil
+		},
+		"JOIN": func(c *Call) (interface{}, error) {
+			sep := c.String(0)
+			var buff bytes.Buffer
+			for i, v := range c.Values[1:] {
+				str, ok := v.(string)
+				if !ok {
+					re("JOIN arguments must be string")
+				}
+				if i > 0 {
+					buff.WriteString(sep)
+				}
+				buff.WriteString(str)
+			}
+			return buff.String(), nil
 		},
 		"LEFT": func(c *Call) (interface{}, error) {
 			str := c.String(0)
