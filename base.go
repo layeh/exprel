@@ -39,6 +39,17 @@ func init() {
 		},
 
 		// Strings
+		"CHAR": func(c *Call) (interface{}, error) {
+			var r []rune
+			for _, v := range c.Values {
+				code, ok := v.(float64)
+				if !ok {
+					re("CHAR argument must be float64")
+				}
+				r = append(r, rune(code))
+			}
+			return string(r), nil
+		},
 		"LEFT": func(c *Call) (interface{}, error) {
 			str := c.String(0)
 			count := int(c.OptNumber(1, 1))

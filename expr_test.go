@@ -137,6 +137,14 @@ func TestBaseABS(t *testing.T) {
 	testNumber(t, expr, 342, exprel.Base)
 }
 
+func TestBaseCHAR(t *testing.T) {
+	expr := `=CHAR(72; 101; 108; 108; 111; 33)`
+	testString(t, expr, "Hello!", exprel.Base)
+
+	expr = `=CHAR()`
+	testString(t, expr, "", exprel.Base)
+}
+
 func TestBaseLEFT(t *testing.T) {
 	expr := `=LEFT("hello")`
 	testString(t, expr, "h", exprel.Base)
