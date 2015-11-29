@@ -53,6 +53,16 @@ func init() {
 		"RAND": func(c *Call) (interface{}, error) {
 			return rand.Float64(), nil
 		},
+		"SIGN": func(c *Call) (interface{}, error) {
+			number := c.Number(0)
+			if number < 0 {
+				return float64(-1), nil
+			}
+			if number > 0 {
+				return float64(1), nil
+			}
+			return float64(0), nil
+		},
 
 		// Strings
 		"CHAR": func(c *Call) (interface{}, error) {

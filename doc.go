@@ -73,6 +73,7 @@
 //  EXP(a)                 float64          float64
 //  PI()                                    float64
 //  RAND()                                  float64
+//  SIGN(a)                float64          float64
 //
 //  CHAR(...)              float64          string
 //  JOIN(sep;...)          string...        string
