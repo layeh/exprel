@@ -64,25 +64,27 @@
 //
 //
 // The following functions are defined as part of Base:
-//                         Argument type    Return type
-//  ---------------------------------------------------
-//  CHOOSE(index;a;b;...)  float64, ANY...  ANY
-//  TYPE(a)                ANY              float64
+//                         Argument type     Return type
+//  ----------------------------------------------------
+//  CHOOSE(index;a;b;...)  float64, ANY...   ANY
+//  TYPE(a)                ANY               float64
 //
-//  ABS(a)                 float64          float64
-//  EXP(a)                 float64          float64
-//  PI()                                    float64
-//  RAND()                                  float64
-//  SIGN(a)                float64          float64
+//  ABS(a)                 float64           float64
+//  EXP(a)                 float64           float64
+//  LN(a)                  float64           float64
+//  LOG10(a)               float64           float64
+//  PI()                                     float64
+//  RAND()                                   float64
+//  SIGN(a)                float64           float64
 //
-//  CHAR(...)              float64          string
-//  JOIN(sep;...)          string...        string
-//  LEFT(str;a)            string, float64  string
-//  LEN(a)                 string           float64
-//  LOWER(a)               string           string
-//  REPT(a;b)              string, float64  string
-//  RIGHT(str;a)           string, float64  string
-//  TRIM(a)                string           string
-//  UPPER(a)               string           string
+//  CHAR(...)              float64           string
+//  JOIN(sep;...)          string...         string
+//  LEFT(str;a)            string, float64   string
+//  LEN(a)                 string            float64
+//  LOWER(a)               string            string
+//  REPT(a;b)              string, float64   string
+//  RIGHT(str;a)           string, float64   string
+//  TRIM(a)                string            string
+//  UPPER(a)               string            string
 //
 package exprel

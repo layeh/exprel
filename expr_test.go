@@ -159,6 +159,22 @@ func TestBaseSIGN(t *testing.T) {
 	testNumber(t, expr, 1, exprel.Base)
 }
 
+func TestBaseLN(t *testing.T) {
+	expr := `=LN(1)`
+	testNumber(t, expr, 0, exprel.Base)
+
+	expr = `=LN(EXP(1))`
+	testNumber(t, expr, 1, exprel.Base)
+}
+
+func TestBaseLOG10(t *testing.T) {
+	expr := `=LOG10(10)`
+	testNumber(t, expr, 1, exprel.Base)
+
+	expr = `=LOG10(100)`
+	testNumber(t, expr, 2, exprel.Base)
+}
+
 func TestBaseCHAR(t *testing.T) {
 	expr := `=CHAR(72; 101; 108; 108; 111; 33)`
 	testString(t, expr, "Hello!", exprel.Base)

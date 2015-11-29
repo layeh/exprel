@@ -47,6 +47,14 @@ func init() {
 			number := c.Number(0)
 			return math.Exp(number), nil
 		},
+		"LN": func(c *Call) (interface{}, error) {
+			number := c.Number(0)
+			return math.Log(number), nil
+		},
+		"LOG10": func(c *Call) (interface{}, error) {
+			number := c.Number(0)
+			return math.Log10(number), nil
+		},
 		"PI": func(c *Call) (interface{}, error) {
 			return float64(math.Pi), nil
 		},
