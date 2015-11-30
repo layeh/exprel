@@ -115,6 +115,18 @@ func init() {
 			str := c.String(0)
 			return strings.ToLower(str), nil
 		},
+		"MID": func(c *Call) (interface{}, error) {
+			str := c.String(0)
+			start := int(c.Number(1)) - 1
+			length := int(c.OptNumber(2, 1))
+			if len(str) <= start || start < 0 {
+				return "", nil
+			}
+			if len(str) <= start+length {
+				return str[start:], nil
+			}
+			return str[start : start+length], nil
+		},
 		"REPT": func(c *Call) (interface{}, error) {
 			str := c.String(0)
 			count := c.Number(1)

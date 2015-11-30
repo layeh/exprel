@@ -209,6 +209,23 @@ func TestBaseLOWER(t *testing.T) {
 	testString(t, expr, "heythere", exprel.Base)
 }
 
+func TestBaseMID(t *testing.T) {
+	expr := `=MID("hello world";1;5)`
+	testString(t, expr, "hello", exprel.Base)
+
+	expr = `=MID("hello world";-5;3)`
+	testString(t, expr, "", exprel.Base)
+
+	expr = `=MID("hello world";20)`
+	testString(t, expr, "", exprel.Base)
+
+	expr = `=MID("hello world";7;1)`
+	testString(t, expr, "w", exprel.Base)
+
+	expr = `=MID("hello world";7;100)`
+	testString(t, expr, "world", exprel.Base)
+}
+
 func TestBaseREPT(t *testing.T) {
 	expr := `=REPT("1"; 5)`
 	testString(t, expr, "11111", exprel.Base)
