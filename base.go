@@ -143,6 +143,19 @@ func init() {
 			}
 			return str[len(str)-count:], nil
 		},
+		"SEARCH": func(c *Call) (interface{}, error) {
+			needle := c.String(0)
+			haystack := c.String(1)
+			start := int(c.OptNumber(2, 1)) - 1
+			if len(haystack) <= start || start < 0 {
+				return float64(-1), nil
+			}
+			ret := strings.Index(haystack[start:], needle)
+			if ret == -1 {
+				return float64(-1), nil
+			}
+			return float64(ret + start + 1), nil
+		},
 		"TRIM": func(c *Call) (interface{}, error) {
 			str := c.String(0)
 			return strings.TrimSpace(str), nil

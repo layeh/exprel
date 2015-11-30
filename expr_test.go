@@ -242,6 +242,23 @@ func TestBaseRIGHT(t *testing.T) {
 	testString(t, expr, "hello", exprel.Base)
 }
 
+func TestBaseSEARCH(t *testing.T) {
+	expr := `=SEARCH("e"; "hello world")`
+	testNumber(t, expr, 2, exprel.Base)
+
+	expr = `=SEARCH("z"; "hello world")`
+	testNumber(t, expr, -1, exprel.Base)
+
+	expr = `=SEARCH("e"; "hello world"; 2)`
+	testNumber(t, expr, 2, exprel.Base)
+
+	expr = `=SEARCH("e"; "hello world"; 3)`
+	testNumber(t, expr, -1, exprel.Base)
+
+	expr = `=SEARCH("e"; "hello world"; 100)`
+	testNumber(t, expr, -1, exprel.Base)
+}
+
 func TestBaseTRIM(t *testing.T) {
 	expr := `=TRIM(" hello  world   ")`
 	testString(t, expr, "hello  world", exprel.Base)

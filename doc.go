@@ -85,6 +85,7 @@
 //  MID(a;b;c)             string, float64, float64   string
 //  REPT(a;b)              string, float64            string
 //  RIGHT(str;a)           string, float64            string
+//  SEARCH(a;b;c)          string, string, float64    float64
 //  TRIM(a)                string                     string
 //  UPPER(a)               string                     string
 //
