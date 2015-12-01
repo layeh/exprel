@@ -134,11 +134,7 @@ func (n *mathNode) Evaluate(s Source) interface{} {
 	case tknPower:
 		return math.Pow(lhs, rhs)
 	case tknModulo:
-		b := int(rhs)
-		if b == 0 {
-			re("attempted division by zero")
-		}
-		return float64(int(lhs) % b)
+		return math.Mod(lhs, rhs)
 	default:
 		panic("never triggered")
 	}
