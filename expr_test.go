@@ -103,6 +103,17 @@ func TestUnaryMinus(t *testing.T) {
 	testNumber(t, expr, 1 - -4, nil)
 }
 
+func TestModulo(t *testing.T) {
+	expr := `=0 % 5`
+	testNumber(t, expr, 0, nil)
+
+	expr = `=5 % 2`
+	testNumber(t, expr, 1, nil)
+
+	expr = `=1 % 1`
+	testNumber(t, expr, 0, nil)
+}
+
 func TestNoArgFunction(t *testing.T) {
 	fns := exprel.SourceMap{
 		"SAYHELLO": func(*exprel.Call) (interface{}, error) {

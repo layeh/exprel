@@ -14,6 +14,7 @@ const (
 	tknMultiply rune = '*'
 	tknDivide   rune = '/'
 	tknPower    rune = '^'
+	tknModulo   rune = '%'
 	tknConcat   rune = '&'
 
 	tknEquals       rune = '='
@@ -79,7 +80,7 @@ func (l *lexer) Next() interface{} {
 
 	r, _, _ := l.R.ReadRune()
 	switch {
-	case r == tknAdd, r == tknSubtract, r == tknMultiply, r == tknDivide, r == tknPower, r == tknEquals, r == tknConcat, r == tknSep, r == tknOpen, r == tknClose:
+	case r == tknAdd, r == tknSubtract, r == tknMultiply, r == tknDivide, r == tknPower, tknModulo == r, r == tknEquals, r == tknConcat, r == tknSep, r == tknOpen, r == tknClose:
 		// simple operators
 		return r
 	case r == tknGreater:

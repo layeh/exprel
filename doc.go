@@ -51,6 +51,7 @@
 //  Multiplication  a * b         float64
 //  Divition        a / b         float64
 //  Exponentiation  a ^ b         float64
+//  Modulo          a % b         float64
 //  Concatenation   a & b         string
 //
 //  Logical AND     AND(a;b;...)  bool           Operands lazily evaluated

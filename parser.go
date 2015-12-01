@@ -119,13 +119,13 @@ func (p *parser) parseBin1() node {
 
 /*
  * BIN2        TERM
- *             TERM ["*" | "/" | "^" ] EXPRESSION
+ *             TERM ["*" | "/" | "^" | "%" ] EXPRESSION
  */
 func (p *parser) parseBin2() node {
 	lhs := p.parseTerm()
 	if r, ok := p.peek().(rune); ok {
 		switch r {
-		case tknMultiply, tknDivide, tknPower:
+		case tknMultiply, tknDivide, tknPower, tknModulo:
 			p.next()
 			rhs := p.parseExpression()
 			return &mathNode{r, lhs, rhs}
