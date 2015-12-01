@@ -1,5 +1,9 @@
 package exprel
 
+import (
+	"errors"
+)
+
 // Expression is an user-defined expression that can be evaluated.
 type Expression struct {
 	node node
@@ -69,4 +73,52 @@ func Evaluate(s string, source ...Source) (val interface{}, err error) {
 		return nil, err
 	}
 	return result, nil
+}
+
+// String ensures that an evaluated expression's return type is string.
+func String(val interface{}, err error) (string, error) {
+	if err != nil {
+		return "", err
+	}
+	casted, ok := val.(string)
+	if !ok {
+		return "", errors.New("exprel: invalid return type (string expected, got " + typename(val) + ")")
+	}
+	return casted, nil
+}
+
+// Number ensures that an evaluated expression's return type is float64.
+func Number(val interface{}, err error) (float64, error) {
+	if err != nil {
+		return 0, err
+	}
+	casted, ok := val.(float64)
+	if !ok {
+		return 0, errors.New("exprel: invalid return type (number expected, got " + typename(val) + ")")
+	}
+	return casted, nil
+}
+
+// Boolean ensures that an evaluated expression's return type is bool.
+func Boolean(val interface{}, err error) (bool, error) {
+	if err != nil {
+		return false, err
+	}
+	casted, ok := val.(bool)
+	if !ok {
+		return false, errors.New("exprel: invalid return type (boolean expected, got " + typename(val) + ")")
+	}
+	return casted, nil
+}
+
+func typename(val interface{}) string {
+	switch val.(type) {
+	case string:
+		return "string"
+	case bool:
+		return "boolean"
+	case float64:
+		return "number"
+	}
+	return ""
 }

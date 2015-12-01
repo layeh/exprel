@@ -327,13 +327,9 @@ func testString(t *testing.T, expr, expected string, source exprel.Source) {
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
-	ret, err := e.Evaluate(source)
+	val, err := exprel.String(e.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate expression: %s\n", err)
-	}
-	val, ok := ret.(string)
-	if !ok {
-		t.Fatalf("expression result should be string\n")
 	}
 	if val != expected {
 		t.Fatalf("incorrect value (expecting `%s`, got `%s`)\n", expected, val)
@@ -345,13 +341,9 @@ func testNumber(t *testing.T, expr string, expected float64, source exprel.Sourc
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
-	ret, err := e.Evaluate(source)
+	val, err := exprel.Number(e.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate expression: %s\n", err)
-	}
-	val, ok := ret.(float64)
-	if !ok {
-		t.Fatalf("expression result should be float64\n")
 	}
 	if val != expected {
 		t.Fatalf("incorrect value (expecting %f, got %f)\n", expected, val)
@@ -363,13 +355,9 @@ func testBool(t *testing.T, expr string, expected bool, source exprel.Source) {
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
-	ret, err := e.Evaluate(source)
+	val, err := exprel.Boolean(e.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate expression: %s\n", err)
-	}
-	val, ok := ret.(bool)
-	if !ok {
-		t.Fatalf("expression result should be bool\n")
 	}
 	if val != expected {
 		t.Fatalf("incorrect value (expecting %v, got %v)\n", expected, val)

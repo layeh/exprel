@@ -9,11 +9,12 @@
 //   data := map[string]interface{}{
 //     "name": "Tim",
 //   }
-//   result, err := exprel.Evaluate(`=LOWER(name) & ".jpg"`, exprel.SourceMap(data))
+//   expression := `=LOWER(name) & ".jpg"`
+//   filename, err := exprel.String(exprel.Evaluate(expression, exprel.SourceMap(data)))
 //   if err != nil {
 //     panic(err)
 //   }
-//   filename := result.(string) // tim.jpg
+//   // filename = "tim.jpg"
 //
 // Introduction
 //
