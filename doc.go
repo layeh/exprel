@@ -1,6 +1,6 @@
 // Package exprel provides a Spreadsheet-like expression evaluator.
 //
-// Quick start
+//   // Quick start
 //
 //   import (
 //     "github.com/layeh/exprel"
@@ -29,14 +29,14 @@
 //  =IF(AND(NOT(FALSE());1=1);1+2;2)  3
 //
 // Expressions with logic must start with an equals sign (=). Otherwise, the
-// return value is simply the source string.
+// evaluated value is simply the source string.
 //
 // Values
 //
 // The following values are can be returned by and used in an expression:
 //  string
-//  float64
-//  bool
+//  float64 (number)
+//  bool (boolean)
 //
 // Sources may also return the following type, which defines a function that
 // can be called from an expression:
@@ -45,50 +45,78 @@
 // Operators
 //
 // The following operators and built-ins are defined:
-//                  Usage         Operand type   Notes
-//  --------------------------------------------------
-//  Addition        a + b         float64
-//  Subtraction     a - b         float64
-//  Multiplication  a * b         float64
-//  Divition        a / b         float64
-//  Exponentiation  a ^ b         float64
-//  Modulo          a % b         float64
-//  Concatenation   a & b         string
+//                    Usage              Notes
+//  ------------------------------------------
+//  Addition          a + b              number
+//  Subtraction       a - b              number
+//  Multiplication    a * b              number
+//  Division          a / b              number
+//  Exponentiation    a ^ b              number
+//  Modulo            a % b              number
+//  Concatenation     a & b              string
 //
-//  Logical AND     AND(a;b;...)  bool           Operands lazily evaluated
-//  Logical OR      OR(a;b;...)   bool           Operands lazily evaluated
-//  Logical NOT     NOT(a)        bool           Operands lazily evaluated
+//  Equality          a = b              string, number, boolean
+//  Inequality        a <> b             string, number, boolean
+//  Greater than      a > b              string, number
+//  Greater or equal  a > b              string, number
+//  Less than         a < b              string, number
+//  Less or equal     a <= b             string, number
 //
-//  Condition       IF(cond;a;b)  bool;ANY;ANY   Lazily evaluated
+//  Logical AND       AND(bool...)       Operands lazily evaluated
+//  Logical OR        OR(bool...)        Operands lazily evaluated
+//  Logical NOT       NOT(bool)          Operands lazily evaluated
 //
-//  Boolean true    TRUE()        N/A
-//  Boolean false   FALSE()       N/A
+//  Condition         IF(bool;ANY;ANY)   Lazily evaluated
+//
+//  Boolean true      TRUE()
+//  Boolean false     FALSE()
 //
 //
 // The following functions are defined as part of Base:
-//                         Argument type     Return type
-//  ----------------------------------------------------
-//  CHOOSE(index;a;b;...)  float64, ANY...            ANY
-//  TYPE(a)                ANY                        float64
+//  CHOOSE(number index; ANY...) ANY
+//    Returns the index item of the remaining arguments
+//  TYPE(ANY a) number
+//    Identifies the type of a. Types are mapped in the following way:
+//      Number  = 1
+//      String  = 2
+//      Boolean = 4
 //
-//  ABS(a)                 float64                    float64
-//  EXP(a)                 float64                    float64
-//  LN(a)                  float64                    float64
-//  LOG10(a)               float64                    float64
-//  PI()                                              float64
-//  RAND()                                            float64
-//  SIGN(a)                float64                    float64
+//  ABS(number a) number
+//    Returns the absolute value of a.
+//  EXP(number a) number
+//    Returns e^a.
+//  LN(number a) number
+//    Returns the natural logarithm of a.
+//  LOG10(number a) number
+//    Returns the base-10 logarithm of a.
+//  PI() number
+//    Returns π.
+//  RAND() number
+//    Returns a random number in the range [0, 1).
+//  SIGN(number a) number
+//    Returns the sign of a.
 //
-//  CHAR(...)              float64                    string
-//  JOIN(sep;...)          string...                  string
-//  LEFT(str;a)            string, float64            string
-//  LEN(a)                 string                     float64
-//  LOWER(a)               string                     string
-//  MID(a;b;c)             string, float64, float64   string
-//  REPT(a;b)              string, float64            string
-//  RIGHT(str;a)           string, float64            string
-//  SEARCH(a;b;c)          string, string, float64    float64
-//  TRIM(a)                string                     string
-//  UPPER(a)               string                     string
-//
+//  CHAR(number...) string
+//    Returns a string whose code points are given as arguments.
+//  JOIN(string sep; string...) string
+//    Returns the trailing string arguments concatenated together with sep.
+//  LEFT(string a; number count = 1) string
+//    Returns the count left-most characters of a.
+//  LEN(string a) number
+//    Returns the length of a.
+//  LOWER(string a) string
+//    Returns a with all uppercase characters transformed to lowercase.
+//  MID(string a; number start; number length = 1) string
+//    Returns length characters of a, starting from start.
+//  REPT(string a; number count) string
+//    Returns the string a, repeated count times.
+//  RIGHT(string a; number count = 1) string
+//    Returns the count right-most characters of a.
+//  SEARCH(string needle; string haystack; number start = 1) number
+//    Returns the position of needle in haystack, starting from start. -1 is
+//    returned if needle was not found.
+//  TRIM(string a) string
+//    Returns a with whitespace removed from the beginning and end.
+//  UPPER(string a) string
+//    Returns a with all lowercase characters transformed to uppercase.
 package exprel
