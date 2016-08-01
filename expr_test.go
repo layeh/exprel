@@ -334,6 +334,22 @@ func testString(t *testing.T, expr, expected string, source exprel.Source) {
 	if val != expected {
 		t.Fatalf("incorrect value (expecting `%s`, got `%s`)\n", expected, val)
 	}
+
+	raw, err := e.MarshalText()
+	if err != nil {
+		t.Fatalf("MarshalText error: %s\n", err)
+	}
+	var e2 exprel.Expression
+	if err := e2.UnmarshalText(raw); err != nil {
+		t.Fatalf("UnmarshalText error: %s\n", err)
+	}
+	val2, err := exprel.String(e2.Evaluate(source))
+	if err != nil {
+		t.Fatalf("could not evaluate unmarshaled expression: %s\n", err)
+	}
+	if val2 != expected {
+		t.Fatalf("incorrect unmarshaled value (expecting `%s`, got `%s`)\n", expected, val)
+	}
 }
 
 func testNumber(t *testing.T, expr string, expected float64, source exprel.Source) {
@@ -348,6 +364,22 @@ func testNumber(t *testing.T, expr string, expected float64, source exprel.Sourc
 	if val != expected {
 		t.Fatalf("incorrect value (expecting %f, got %f)\n", expected, val)
 	}
+
+	raw, err := e.MarshalText()
+	if err != nil {
+		t.Fatalf("MarshalText error: %s\n", err)
+	}
+	var e2 exprel.Expression
+	if err := e2.UnmarshalText(raw); err != nil {
+		t.Fatalf("UnmarshalText error: %s\n", err)
+	}
+	val2, err := exprel.Number(e2.Evaluate(source))
+	if err != nil {
+		t.Fatalf("could not evaluate unmarshaled expression: %s\n", err)
+	}
+	if val2 != expected {
+		t.Fatalf("incorrect unmarshaled value (expecting %f, got %f)\n", expected, val)
+	}
 }
 
 func testBool(t *testing.T, expr string, expected bool, source exprel.Source) {
@@ -361,5 +393,21 @@ func testBool(t *testing.T, expr string, expected bool, source exprel.Source) {
 	}
 	if val != expected {
 		t.Fatalf("incorrect value (expecting %v, got %v)\n", expected, val)
+	}
+
+	raw, err := e.MarshalText()
+	if err != nil {
+		t.Fatalf("MarshalText error: %s\n", err)
+	}
+	var e2 exprel.Expression
+	if err := e2.UnmarshalText(raw); err != nil {
+		t.Fatalf("UnmarshalText error: %s\n", err)
+	}
+	val2, err := exprel.Boolean(e2.Evaluate(source))
+	if err != nil {
+		t.Fatalf("could not evaluate unmarshaled expression: %s\n", err)
+	}
+	if val2 != expected {
+		t.Fatalf("incorrect unmarshaled value (expecting %v, got %v)\n", expected, val)
 	}
 }

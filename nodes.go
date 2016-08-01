@@ -1,11 +1,14 @@
 package exprel
 
 import (
+	"bytes"
 	"math"
+	"strconv"
 )
 
 type node interface {
 	Evaluate(s Source) interface{}
+	Encode(b *bytes.Buffer)
 }
 
 type stringNode string
@@ -14,16 +17,32 @@ func (n stringNode) Evaluate(s Source) interface{} {
 	return string(n)
 }
 
+func (n stringNode) Encode(b *bytes.Buffer) {
+	b.WriteString(strconv.Quote(string(n)))
+}
+
 type boolNode bool
 
 func (n boolNode) Evaluate(s Source) interface{} {
 	return bool(n)
 }
 
+func (n boolNode) Encode(b *bytes.Buffer) {
+	if n {
+		b.WriteString("TRUE()")
+	} else {
+		b.WriteString("FALSE()")
+	}
+}
+
 type numberNode float64
 
 func (n numberNode) Evaluate(s Source) interface{} {
 	return float64(n)
+}
+
+func (n numberNode) Encode(b *bytes.Buffer) {
+	b.WriteString(strconv.FormatFloat(float64(n), 'f', -1, 64))
 }
 
 type notNode struct {
@@ -36,6 +55,12 @@ func (n *notNode) Evaluate(s Source) interface{} {
 		re("NOT expects bool value")
 	}
 	return !val
+}
+
+func (n *notNode) Encode(b *bytes.Buffer) {
+	b.WriteString("NOT(")
+	n.node.Encode(b)
+	b.WriteByte(')')
 }
 
 type lookupNode string
@@ -52,6 +77,10 @@ func (n lookupNode) Evaluate(s Source) interface{} {
 		re("identifier '" + id + "' has invalid type")
 	}
 	return ret
+}
+
+func (n lookupNode) Encode(b *bytes.Buffer) {
+	b.WriteString(string(n))
 }
 
 type callNode struct {
@@ -93,6 +122,18 @@ func (n *callNode) Evaluate(s Source) interface{} {
 	panic("never called")
 }
 
+func (n *callNode) Encode(b *bytes.Buffer) {
+	b.WriteString(n.Name)
+	b.WriteByte('(')
+	for i, arg := range n.Args {
+		if i > 0 {
+			b.WriteString("; ")
+		}
+		arg.Encode(b)
+	}
+	b.WriteByte(')')
+}
+
 type concatNode [2]node
 
 func (n concatNode) Evaluate(s Source) interface{} {
@@ -105,6 +146,12 @@ func (n concatNode) Evaluate(s Source) interface{} {
 		re("RHS of & must be string")
 	}
 	return lhs + rhs
+}
+
+func (n concatNode) Encode(b *bytes.Buffer) {
+	n[0].Encode(b)
+	b.WriteString(" & ")
+	n[1].Encode(b)
 }
 
 type mathNode struct {
@@ -138,6 +185,14 @@ func (n *mathNode) Evaluate(s Source) interface{} {
 	default:
 		panic("never triggered")
 	}
+}
+
+func (n *mathNode) Encode(b *bytes.Buffer) {
+	n.LHS.Encode(b)
+	b.WriteByte(' ')
+	b.WriteRune(n.Op)
+	b.WriteByte(' ')
+	n.RHS.Encode(b)
 }
 
 type eqNode struct {
@@ -181,6 +236,14 @@ func (n *eqNode) Evaluate(s Source) interface{} {
 	}
 	re("mismatched comparison operand types")
 	panic("never called")
+}
+
+func (n *eqNode) Encode(b *bytes.Buffer) {
+	n.LHS.Encode(b)
+	b.WriteByte(' ')
+	b.WriteRune(n.Op)
+	b.WriteByte(' ')
+	n.RHS.Encode(b)
 }
 
 type cmpNode struct {
@@ -228,6 +291,23 @@ func (n *cmpNode) Evaluate(s Source) interface{} {
 	panic("never called")
 }
 
+func (n *cmpNode) Encode(b *bytes.Buffer) {
+	n.LHS.Encode(b)
+	b.WriteByte(' ')
+	switch n.Op {
+	case tknGreaterEqual:
+		b.WriteString(">=")
+	case tknLessEqual:
+		b.WriteString("<=")
+	case tknInequal:
+		b.WriteString("<>")
+	default:
+		b.WriteRune(n.Op)
+	}
+	b.WriteByte(' ')
+	n.RHS.Encode(b)
+}
+
 type andNode []node
 
 func (n andNode) Evaluate(s Source) interface{} {
@@ -241,6 +321,17 @@ func (n andNode) Evaluate(s Source) interface{} {
 		}
 	}
 	return true
+}
+
+func (n andNode) Encode(b *bytes.Buffer) {
+	b.WriteString("AND(")
+	for i, operand := range n {
+		if i > 0 {
+			b.WriteString("; ")
+		}
+		operand.Encode(b)
+	}
+	b.WriteByte(')')
 }
 
 type orNode []node
@@ -258,6 +349,17 @@ func (n orNode) Evaluate(s Source) interface{} {
 	return false
 }
 
+func (n orNode) Encode(b *bytes.Buffer) {
+	b.WriteString("OR(")
+	for i, operand := range n {
+		if i > 0 {
+			b.WriteString("; ")
+		}
+		operand.Encode(b)
+	}
+	b.WriteByte(')')
+}
+
 type ifNode struct {
 	Cond  node
 	True  node
@@ -273,4 +375,14 @@ func (n *ifNode) Evaluate(s Source) interface{} {
 		return n.True.Evaluate(s)
 	}
 	return n.False.Evaluate(s)
+}
+
+func (n *ifNode) Encode(b *bytes.Buffer) {
+	b.WriteString("IF(")
+	n.Cond.Encode(b)
+	b.WriteString("; ")
+	n.True.Encode(b)
+	b.WriteString("; ")
+	n.False.Encode(b)
+	b.WriteByte(')')
 }

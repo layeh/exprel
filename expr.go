@@ -1,6 +1,7 @@
 package exprel
 
 import (
+	"bytes"
 	"errors"
 )
 
@@ -53,6 +54,28 @@ func (e *Expression) Evaluate(s Source) (val interface{}, err error) {
 		}
 	}()
 	return e.node.Evaluate(s), nil
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (e *Expression) MarshalText() ([]byte, error) {
+	if e.node == nil {
+		return nil, errors.New("empty expression")
+	}
+
+	var b bytes.Buffer
+	b.WriteByte('=')
+	e.node.Encode(&b)
+	return b.Bytes(), nil
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (e *Expression) UnmarshalText(text []byte) error {
+	expr, err := Parse(string(text))
+	if err != nil {
+		return err
+	}
+	*e = *expr
+	return nil
 }
 
 // Evaluate parses the given string and evaluates it with the given sources
