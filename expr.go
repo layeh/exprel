@@ -16,14 +16,8 @@ type Expression struct {
 // Upon success, expression and nil are returned.  Upon failure, nil and error
 // are returned.
 func Parse(s string) (*Expression, error) {
-	if len(s) == 0 {
-		return nil, &SyntaxError{
-			Message:  "empty expression",
-			Position: 0,
-		}
-	}
 	// simple expression; nothing to parse
-	if s[0] != '=' {
+	if len(s) == 0 || s[0] != '=' {
 		return &Expression{
 			node: stringNode(s),
 		}, nil

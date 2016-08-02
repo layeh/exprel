@@ -8,6 +8,11 @@ import (
 	"github.com/layeh/exprel"
 )
 
+func TestEmpty(t *testing.T) {
+	expr := ``
+	testString(t, expr, "", nil)
+}
+
 func TestSimple(t *testing.T) {
 	expr := `Hello World!`
 	testString(t, expr, "Hello World!", nil)
