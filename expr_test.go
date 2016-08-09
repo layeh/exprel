@@ -1,6 +1,7 @@
 package exprel_test
 
 import (
+	"bytes"
 	"errors"
 	"regexp"
 	"testing"
@@ -31,6 +32,23 @@ func TestEvaluate(t *testing.T) {
 	if filename != expecting {
 		t.Fatalf("got %s, expecting %s\n", filename, expecting)
 	}
+}
+
+func TestOverflow(t *testing.T) {
+	var b bytes.Buffer
+	{
+		b.WriteByte('=')
+		const max = 1000000
+		for i := 0; i < max; i++ {
+			b.WriteByte('(')
+		}
+		b.WriteString("1 + 1")
+		for i := 0; i < max; i++ {
+			b.WriteByte(')')
+		}
+	}
+
+	testSyntaxError(t, b.String(), "maximum depth", nil)
 }
 
 func TestErrSyntax(t *testing.T) {

@@ -1,8 +1,11 @@
 package exprel
 
+const maximumDepth = 1024
+
 type parser struct {
 	Node node
 
+	depth   int
 	l       *lexer
 	lastTkn interface{}
 }
@@ -20,8 +23,24 @@ func parseString(s string) (n node, err error) {
 			panic(rec)
 		}
 	}()
-	n = p.parseProgram()
+	n = p.do(p.parseProgram)
 	return
+}
+
+func (p *parser) do(fn func() node) node {
+	p.depth++
+	if p.depth >= maximumDepth {
+		panic(&SyntaxError{
+			Message:  "maximum depth reached",
+			Position: p.l.pos(),
+		})
+	}
+
+	n := fn()
+
+	p.depth--
+
+	return n
 }
 
 func (p *parser) next() interface{} {
@@ -65,7 +84,7 @@ func (p *parser) peekRune(expecting rune) bool {
  * PROGRAM     EXPRESSION
  */
 func (p *parser) parseProgram() node {
-	expr := p.parseExpression()
+	expr := p.do(p.parseExpression)
 	if p.l.HasNext() {
 		panic(&SyntaxError{
 			Message:  "expecting EOF",
@@ -80,16 +99,16 @@ func (p *parser) parseProgram() node {
  *             BIN1
  */
 func (p *parser) parseExpression() node {
-	lhs := p.parseBin1()
+	lhs := p.do(p.parseBin1)
 	if r, ok := p.peek().(rune); ok {
 		switch r {
 		case tknEquals, tknInequal:
 			p.next()
-			rhs := p.parseExpression()
+			rhs := p.do(p.parseExpression)
 			return &eqNode{r, lhs, rhs}
 		case tknGreater, tknGreaterEqual, tknLess, tknLessEqual:
 			p.next()
-			rhs := p.parseExpression()
+			rhs := p.do(p.parseExpression)
 			return &cmpNode{r, lhs, rhs}
 		}
 	}
@@ -101,16 +120,16 @@ func (p *parser) parseExpression() node {
  *             BIN2 ["+" | "-" | "&" ] EXPRESSION
  */
 func (p *parser) parseBin1() node {
-	lhs := p.parseBin2()
+	lhs := p.do(p.parseBin2)
 	if r, ok := p.peek().(rune); ok {
 		switch r {
 		case tknAdd, tknSubtract:
 			p.next()
-			rhs := p.parseExpression()
+			rhs := p.do(p.parseExpression)
 			return &mathNode{r, lhs, rhs}
 		case tknConcat:
 			p.next()
-			rhs := p.parseExpression()
+			rhs := p.do(p.parseExpression)
 			return concatNode{lhs, rhs}
 		}
 	}
@@ -122,12 +141,12 @@ func (p *parser) parseBin1() node {
  *             TERM ["*" | "/" | "^" | "%" ] EXPRESSION
  */
 func (p *parser) parseBin2() node {
-	lhs := p.parseTerm()
+	lhs := p.do(p.parseTerm)
 	if r, ok := p.peek().(rune); ok {
 		switch r {
 		case tknMultiply, tknDivide, tknPower, tknModulo:
 			p.next()
-			rhs := p.parseExpression()
+			rhs := p.do(p.parseExpression)
 			return &mathNode{r, lhs, rhs}
 		}
 	}
@@ -155,7 +174,7 @@ func (p *parser) parseTerm() node {
 	case rune:
 		switch v {
 		case tknOpen:
-			expr := p.parseExpression()
+			expr := p.do(p.parseExpression)
 			p.nextRune(tknClose)
 			return expr
 		case tknSubtract:
@@ -178,11 +197,11 @@ func (p *parser) parseTerm() node {
 			switch string(v) {
 			case "IF":
 				p.next()
-				ifCond := p.parseExpression()
+				ifCond := p.do(p.parseExpression)
 				p.nextRune(tknSep)
-				ifTrue := p.parseExpression()
+				ifTrue := p.do(p.parseExpression)
 				p.nextRune(tknSep)
-				ifFalse := p.parseExpression()
+				ifFalse := p.do(p.parseExpression)
 				p.nextRune(tknClose)
 				return &ifNode{ifCond, ifTrue, ifFalse}
 			case "TRUE":
@@ -195,14 +214,14 @@ func (p *parser) parseTerm() node {
 				return boolNode(false)
 			case "NOT":
 				p.next()
-				expr := p.parseExpression()
+				expr := p.do(p.parseExpression)
 				p.nextRune(tknClose)
 				return &notNode{expr}
 			case "AND":
 				p.next()
 				var n andNode
 				for {
-					expr := p.parseExpression()
+					expr := p.do(p.parseExpression)
 					n = append(n, expr)
 					if !p.peekRune(tknSep) {
 						break
@@ -215,7 +234,7 @@ func (p *parser) parseTerm() node {
 				p.next()
 				var n orNode
 				for {
-					expr := p.parseExpression()
+					expr := p.do(p.parseExpression)
 					n = append(n, expr)
 					if !p.peekRune(tknSep) {
 						break
@@ -231,7 +250,7 @@ func (p *parser) parseTerm() node {
 				}
 				if !p.peekRune(tknClose) {
 					for {
-						expr := p.parseExpression()
+						expr := p.do(p.parseExpression)
 						call.Args = append(call.Args, expr)
 						if !p.peekRune(tknSep) {
 							break
