@@ -1,12 +1,10 @@
-package exprel_test
+package exprel // import "layeh.com/exprel"
 
 import (
 	"bytes"
 	"errors"
 	"regexp"
 	"testing"
-
-	"github.com/layeh/exprel"
 )
 
 func TestEmpty(t *testing.T) {
@@ -23,7 +21,7 @@ func TestEvaluate(t *testing.T) {
 	data := map[string]interface{}{
 		"name": "Tim",
 	}
-	result, err := exprel.Evaluate(`=LOWER(name) & ".jpg"`, exprel.SourceMap(data))
+	result, err := Evaluate(`=LOWER(name) & ".jpg"`, SourceMap(data))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +85,7 @@ func TestIf(t *testing.T) {
 }
 
 func TestAndShort(t *testing.T) {
-	fns := exprel.SourceMap{
+	fns := SourceMap{
 		"FUNC": func(...interface{}) (interface{}, error) {
 			return nil, errors.New("FUNC should not be called")
 		},
@@ -102,8 +100,8 @@ func TestAnd(t *testing.T) {
 }
 
 func TestOrShort(t *testing.T) {
-	fns := exprel.SourceMap{
-		"FUNC": func(*exprel.Call) (interface{}, error) {
+	fns := SourceMap{
+		"FUNC": func(*Call) (interface{}, error) {
 			return nil, errors.New("FUNC should not be called")
 		},
 	}
@@ -112,8 +110,8 @@ func TestOrShort(t *testing.T) {
 }
 
 func TestOr(t *testing.T) {
-	fns := exprel.SourceMap{
-		"FUNC": func(*exprel.Call) (interface{}, error) {
+	fns := SourceMap{
+		"FUNC": func(*Call) (interface{}, error) {
 			return false, nil
 		},
 	}
@@ -138,8 +136,8 @@ func TestModulo(t *testing.T) {
 }
 
 func TestNoArgFunction(t *testing.T) {
-	fns := exprel.SourceMap{
-		"SAYHELLO": func(*exprel.Call) (interface{}, error) {
+	fns := SourceMap{
+		"SAYHELLO": func(*Call) (interface{}, error) {
 			return "Hello World!", nil
 		},
 	}
@@ -153,7 +151,7 @@ func TestMapSource(t *testing.T) {
 		"B": float64(456),
 	}
 	expr := `=A + B`
-	testNumber(t, expr, 123+456, exprel.SourceMap(m))
+	testNumber(t, expr, 123+456, SourceMap(m))
 }
 
 func TestBuiltinNOT(t *testing.T) {
@@ -163,154 +161,154 @@ func TestBuiltinNOT(t *testing.T) {
 
 func TestBaseCHOOSE(t *testing.T) {
 	expr := `=CHOOSE(1; 10; 20; 30)`
-	testNumber(t, expr, 20, exprel.Base)
+	testNumber(t, expr, 20, Base)
 }
 
 func TestBaseTYPE(t *testing.T) {
 	expr := `=TYPE(123)`
-	testNumber(t, expr, 1, exprel.Base)
+	testNumber(t, expr, 1, Base)
 
 	expr = `=TYPE("hello")`
-	testNumber(t, expr, 2, exprel.Base)
+	testNumber(t, expr, 2, Base)
 
 	expr = `=TYPE(TRUE())`
-	testNumber(t, expr, 4, exprel.Base)
+	testNumber(t, expr, 4, Base)
 }
 
 func TestBaseABS(t *testing.T) {
 	expr := `=ABS(-342)`
-	testNumber(t, expr, 342, exprel.Base)
+	testNumber(t, expr, 342, Base)
 }
 
 func TestBaseSIGN(t *testing.T) {
 	expr := `=SIGN(-34)`
-	testNumber(t, expr, -1, exprel.Base)
+	testNumber(t, expr, -1, Base)
 
 	expr = `=SIGN(0)`
-	testNumber(t, expr, 0, exprel.Base)
+	testNumber(t, expr, 0, Base)
 
 	expr = `=SIGN(242342)`
-	testNumber(t, expr, 1, exprel.Base)
+	testNumber(t, expr, 1, Base)
 }
 
 func TestBaseLN(t *testing.T) {
 	expr := `=LN(1)`
-	testNumber(t, expr, 0, exprel.Base)
+	testNumber(t, expr, 0, Base)
 
 	expr = `=LN(EXP(1))`
-	testNumber(t, expr, 1, exprel.Base)
+	testNumber(t, expr, 1, Base)
 }
 
 func TestBaseLOG10(t *testing.T) {
 	expr := `=LOG10(10)`
-	testNumber(t, expr, 1, exprel.Base)
+	testNumber(t, expr, 1, Base)
 
 	expr = `=LOG10(100)`
-	testNumber(t, expr, 2, exprel.Base)
+	testNumber(t, expr, 2, Base)
 }
 
 func TestBaseCHAR(t *testing.T) {
 	expr := `=CHAR(72; 101; 108; 108; 111; 33)`
-	testString(t, expr, "Hello!", exprel.Base)
+	testString(t, expr, "Hello!", Base)
 
 	expr = `=CHAR()`
-	testString(t, expr, "", exprel.Base)
+	testString(t, expr, "", Base)
 }
 
 func TestBaseJOIN(t *testing.T) {
 	expr := `=JOIN(", "; "a"; "b"; "c")`
-	testString(t, expr, "a, b, c", exprel.Base)
+	testString(t, expr, "a, b, c", Base)
 
 	expr = `=JOIN("!!!")`
-	testString(t, expr, "", exprel.Base)
+	testString(t, expr, "", Base)
 }
 
 func TestBaseLEFT(t *testing.T) {
 	expr := `=LEFT("hello")`
-	testString(t, expr, "h", exprel.Base)
+	testString(t, expr, "h", Base)
 
 	expr = `=LEFT("hello";10)`
-	testString(t, expr, "hello", exprel.Base)
+	testString(t, expr, "hello", Base)
 }
 
 func TestBaseLEN(t *testing.T) {
 	expr := `=LEN("hélloworld")`
-	testNumber(t, expr, float64(len("hélloworld")), exprel.Base)
+	testNumber(t, expr, float64(len("hélloworld")), Base)
 }
 
 func TestBaseLOWER(t *testing.T) {
 	expr := `=LOWER("hey" & "THERE")`
-	testString(t, expr, "heythere", exprel.Base)
+	testString(t, expr, "heythere", Base)
 }
 
 func TestBaseMID(t *testing.T) {
 	expr := `=MID("hello world";1;5)`
-	testString(t, expr, "hello", exprel.Base)
+	testString(t, expr, "hello", Base)
 
 	expr = `=MID("hello world";-5;3)`
-	testString(t, expr, "", exprel.Base)
+	testString(t, expr, "", Base)
 
 	expr = `=MID("hello world";20)`
-	testString(t, expr, "", exprel.Base)
+	testString(t, expr, "", Base)
 
 	expr = `=MID("hello world";7;1)`
-	testString(t, expr, "w", exprel.Base)
+	testString(t, expr, "w", Base)
 
 	expr = `=MID("hello world";7;100)`
-	testString(t, expr, "world", exprel.Base)
+	testString(t, expr, "world", Base)
 }
 
 func TestBaseREPT(t *testing.T) {
 	expr := `=REPT("1"; 5)`
-	testString(t, expr, "11111", exprel.Base)
+	testString(t, expr, "11111", Base)
 }
 
 func TestBaseRIGHT(t *testing.T) {
 	expr := `=RIGHT("hello")`
-	testString(t, expr, "o", exprel.Base)
+	testString(t, expr, "o", Base)
 
 	expr = `=RIGHT("hello";3)`
-	testString(t, expr, "llo", exprel.Base)
+	testString(t, expr, "llo", Base)
 
 	expr = `=RIGHT("hello";10)`
-	testString(t, expr, "hello", exprel.Base)
+	testString(t, expr, "hello", Base)
 }
 
 func TestBaseSEARCH(t *testing.T) {
 	expr := `=SEARCH("e"; "hello world")`
-	testNumber(t, expr, 2, exprel.Base)
+	testNumber(t, expr, 2, Base)
 
 	expr = `=SEARCH("z"; "hello world")`
-	testNumber(t, expr, -1, exprel.Base)
+	testNumber(t, expr, -1, Base)
 
 	expr = `=SEARCH("e"; "hello world"; 2)`
-	testNumber(t, expr, 2, exprel.Base)
+	testNumber(t, expr, 2, Base)
 
 	expr = `=SEARCH("e"; "hello world"; 3)`
-	testNumber(t, expr, -1, exprel.Base)
+	testNumber(t, expr, -1, Base)
 
 	expr = `=SEARCH("e"; "hello world"; 100)`
-	testNumber(t, expr, -1, exprel.Base)
+	testNumber(t, expr, -1, Base)
 }
 
 func TestBaseTRIM(t *testing.T) {
 	expr := `=TRIM(" hello  world   ")`
-	testString(t, expr, "hello  world", exprel.Base)
+	testString(t, expr, "hello  world", Base)
 }
 
 func TestBaseUPPER(t *testing.T) {
 	expr := `=UPPER("hey" & "THERE")`
-	testString(t, expr, "HEYTHERE", exprel.Base)
+	testString(t, expr, "HEYTHERE", Base)
 }
 
 // testing helpers
 
-func testSyntaxError(t *testing.T, expr, messageRegex string, source exprel.Source) {
-	_, err := exprel.Parse(expr)
+func testSyntaxError(t *testing.T, expr, messageRegex string, source Source) {
+	_, err := Parse(expr)
 	if err == nil {
 		t.Fatalf("expecting parsing error\n")
 	}
-	syntaxErr, ok := err.(*exprel.SyntaxError)
+	syntaxErr, ok := err.(*SyntaxError)
 	if !ok {
 		t.Fatalf("expecting syntax error\n")
 	}
@@ -323,8 +321,8 @@ func testSyntaxError(t *testing.T, expr, messageRegex string, source exprel.Sour
 	}
 }
 
-func testRuntimeError(t *testing.T, expr, messageRegex string, source exprel.Source) {
-	e, err := exprel.Parse(expr)
+func testRuntimeError(t *testing.T, expr, messageRegex string, source Source) {
+	e, err := Parse(expr)
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
@@ -332,7 +330,7 @@ func testRuntimeError(t *testing.T, expr, messageRegex string, source exprel.Sou
 	if err == nil {
 		t.Fatalf("expecting runtime error\n")
 	}
-	runtimeErr, ok := err.(*exprel.RuntimeError)
+	runtimeErr, ok := err.(*RuntimeError)
 	if !ok {
 		t.Fatalf("expecting runtime error\n")
 	}
@@ -345,12 +343,12 @@ func testRuntimeError(t *testing.T, expr, messageRegex string, source exprel.Sou
 	}
 }
 
-func testString(t *testing.T, expr, expected string, source exprel.Source) {
-	e, err := exprel.Parse(expr)
+func testString(t *testing.T, expr, expected string, source Source) {
+	e, err := Parse(expr)
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
-	val, err := exprel.String(e.Evaluate(source))
+	val, err := String(e.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate expression: %s\n", err)
 	}
@@ -362,11 +360,11 @@ func testString(t *testing.T, expr, expected string, source exprel.Source) {
 	if err != nil {
 		t.Fatalf("MarshalText error: %s\n", err)
 	}
-	var e2 exprel.Expression
+	var e2 Expression
 	if err := e2.UnmarshalText(raw); err != nil {
 		t.Fatalf("UnmarshalText error: %s\n", err)
 	}
-	val2, err := exprel.String(e2.Evaluate(source))
+	val2, err := String(e2.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate unmarshaled expression: %s\n", err)
 	}
@@ -375,12 +373,12 @@ func testString(t *testing.T, expr, expected string, source exprel.Source) {
 	}
 }
 
-func testNumber(t *testing.T, expr string, expected float64, source exprel.Source) {
-	e, err := exprel.Parse(expr)
+func testNumber(t *testing.T, expr string, expected float64, source Source) {
+	e, err := Parse(expr)
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
-	val, err := exprel.Number(e.Evaluate(source))
+	val, err := Number(e.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate expression: %s\n", err)
 	}
@@ -392,11 +390,11 @@ func testNumber(t *testing.T, expr string, expected float64, source exprel.Sourc
 	if err != nil {
 		t.Fatalf("MarshalText error: %s\n", err)
 	}
-	var e2 exprel.Expression
+	var e2 Expression
 	if err := e2.UnmarshalText(raw); err != nil {
 		t.Fatalf("UnmarshalText error: %s\n", err)
 	}
-	val2, err := exprel.Number(e2.Evaluate(source))
+	val2, err := Number(e2.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate unmarshaled expression: %s\n", err)
 	}
@@ -405,12 +403,12 @@ func testNumber(t *testing.T, expr string, expected float64, source exprel.Sourc
 	}
 }
 
-func testBool(t *testing.T, expr string, expected bool, source exprel.Source) {
-	e, err := exprel.Parse(expr)
+func testBool(t *testing.T, expr string, expected bool, source Source) {
+	e, err := Parse(expr)
 	if err != nil {
 		t.Fatalf("could not parse expression: %s\n", err)
 	}
-	val, err := exprel.Boolean(e.Evaluate(source))
+	val, err := Boolean(e.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate expression: %s\n", err)
 	}
@@ -422,11 +420,11 @@ func testBool(t *testing.T, expr string, expected bool, source exprel.Source) {
 	if err != nil {
 		t.Fatalf("MarshalText error: %s\n", err)
 	}
-	var e2 exprel.Expression
+	var e2 Expression
 	if err := e2.UnmarshalText(raw); err != nil {
 		t.Fatalf("UnmarshalText error: %s\n", err)
 	}
-	val2, err := exprel.Boolean(e2.Evaluate(source))
+	val2, err := Boolean(e2.Evaluate(source))
 	if err != nil {
 		t.Fatalf("could not evaluate unmarshaled expression: %s\n", err)
 	}

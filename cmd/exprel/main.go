@@ -1,11 +1,11 @@
-package main
+package main // import "layeh.com/exprel/cmd/exprel"
 
 import (
 	"flag"
 	"fmt"
 	"os"
 
-	"github.com/layeh/exprel"
+	"layeh.com/exprel"
 )
 
 func main() {

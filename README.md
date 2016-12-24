@@ -14,7 +14,7 @@ Example expressions which exprel can evaluate:
 
 ## Documentation
 
-Documentation is provided through the package's godoc. The documentation can be viewed online at [godoc.org](https://godoc.org/github.com/layeh/exprel).
+Documentation is provided through the package's godoc. The documentation can be viewed online at [godoc.org](https://godoc.org/layeh.com/exprel).
 
 # License
 

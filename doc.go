@@ -3,7 +3,7 @@
 //   // Quick start
 //
 //   import (
-//     "github.com/layeh/exprel"
+//     "layeh.com/exprel"
 //   )
 //
 //   data := map[string]interface{}{
@@ -119,4 +119,4 @@
 //    Returns a with whitespace removed from the beginning and end.
 //  UPPER(string a) string
 //    Returns a with all lowercase characters transformed to uppercase.
-package exprel
+package exprel // import "layeh.com/exprel"

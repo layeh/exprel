@@ -1,4 +1,4 @@
-package exprel
+package exprel // import "layeh.com/exprel"
 
 import (
 	"fmt"
