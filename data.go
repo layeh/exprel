@@ -119,8 +119,8 @@ func init() {
 type SourceFunc func(name string) (value interface{}, ok bool)
 
 // Get implements Source.
-func (fn SourceFunc) Get(name string) (interface{}, bool) {
-	return fn(name)
+func (f SourceFunc) Get(name string) (interface{}, bool) {
+	return f(name)
 }
 
 // SourceMap is a Source that looks up an identifier in a map.
@@ -145,8 +145,8 @@ func (m SourceMap) Get(name string) (interface{}, bool) {
 type Sources []Source
 
 // Get implements Source.
-func (so Sources) Get(name string) (interface{}, bool) {
-	for _, s := range so {
+func (s Sources) Get(name string) (interface{}, bool) {
+	for _, s := range s {
 		value, ok := s.Get(name)
 		if ok {
 			return value, true
