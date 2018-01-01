@@ -2,18 +2,19 @@ package exprel // import "layeh.com/exprel"
 
 import (
 	"bytes"
+	"context"
 	"math"
 	"strconv"
 )
 
 type node interface {
-	Evaluate(s Source) interface{}
+	Evaluate(ctx context.Context, s Source) interface{}
 	Encode(b *bytes.Buffer)
 }
 
 type stringNode string
 
-func (n stringNode) Evaluate(s Source) interface{} {
+func (n stringNode) Evaluate(ctx context.Context, s Source) interface{} {
 	return string(n)
 }
 
@@ -23,7 +24,7 @@ func (n stringNode) Encode(b *bytes.Buffer) {
 
 type boolNode bool
 
-func (n boolNode) Evaluate(s Source) interface{} {
+func (n boolNode) Evaluate(ctx context.Context, s Source) interface{} {
 	return bool(n)
 }
 
@@ -37,7 +38,7 @@ func (n boolNode) Encode(b *bytes.Buffer) {
 
 type numberNode float64
 
-func (n numberNode) Evaluate(s Source) interface{} {
+func (n numberNode) Evaluate(ctx context.Context, s Source) interface{} {
 	return float64(n)
 }
 
@@ -49,8 +50,8 @@ type notNode struct {
 	node
 }
 
-func (n *notNode) Evaluate(s Source) interface{} {
-	val, ok := n.node.Evaluate(s).(bool)
+func (n *notNode) Evaluate(ctx context.Context, s Source) interface{} {
+	val, ok := n.node.Evaluate(ctx, s).(bool)
 	if !ok {
 		re("NOT expects bool value")
 	}
@@ -65,7 +66,7 @@ func (n *notNode) Encode(b *bytes.Buffer) {
 
 type lookupNode string
 
-func (n lookupNode) Evaluate(s Source) interface{} {
+func (n lookupNode) Evaluate(ctx context.Context, s Source) interface{} {
 	id := string(n)
 	ret, ok := s.Get(id)
 	if !ok {
@@ -88,7 +89,7 @@ type callNode struct {
 	Args []node
 }
 
-func (n *callNode) Evaluate(s Source) interface{} {
+func (n *callNode) Evaluate(ctx context.Context, s Source) interface{} {
 	name := n.Name
 	fnValue, ok := s.Get(name)
 	if !ok {
@@ -105,9 +106,11 @@ func (n *callNode) Evaluate(s Source) interface{} {
 	call := Call{
 		Name:   name,
 		Values: make([]interface{}, len(n.Args)),
+
+		ctx: ctx,
 	}
 	for i, arg := range n.Args {
-		call.Values[i] = arg.Evaluate(s)
+		call.Values[i] = arg.Evaluate(ctx, s)
 	}
 	ret, err := fn(&call)
 	if err != nil {
@@ -136,12 +139,12 @@ func (n *callNode) Encode(b *bytes.Buffer) {
 
 type concatNode [2]node
 
-func (n concatNode) Evaluate(s Source) interface{} {
-	lhs, lhsOk := n[0].Evaluate(s).(string)
+func (n concatNode) Evaluate(ctx context.Context, s Source) interface{} {
+	lhs, lhsOk := n[0].Evaluate(ctx, s).(string)
 	if !lhsOk {
 		re("LHS of & must be string")
 	}
-	rhs, rhsOk := n[1].Evaluate(s).(string)
+	rhs, rhsOk := n[1].Evaluate(ctx, s).(string)
 	if !rhsOk {
 		re("RHS of & must be string")
 	}
@@ -160,9 +163,9 @@ type mathNode struct {
 	RHS node
 }
 
-func (n *mathNode) Evaluate(s Source) interface{} {
-	lhs, lhsOK := n.LHS.Evaluate(s).(float64)
-	rhs, rhsOK := n.RHS.Evaluate(s).(float64)
+func (n *mathNode) Evaluate(ctx context.Context, s Source) interface{} {
+	lhs, lhsOK := n.LHS.Evaluate(ctx, s).(float64)
+	rhs, rhsOK := n.RHS.Evaluate(ctx, s).(float64)
 	if !lhsOK || !rhsOK {
 		re("invalid " + string(n.Op) + " operands")
 	}
@@ -201,9 +204,9 @@ type eqNode struct {
 	RHS node
 }
 
-func (n *eqNode) Evaluate(s Source) interface{} {
-	lhs := n.LHS.Evaluate(s)
-	rhs := n.RHS.Evaluate(s)
+func (n *eqNode) Evaluate(ctx context.Context, s Source) interface{} {
+	lhs := n.LHS.Evaluate(ctx, s)
+	rhs := n.RHS.Evaluate(ctx, s)
 	{
 		a, aOK := lhs.(string)
 		b, bOK := rhs.(string)
@@ -252,9 +255,9 @@ type cmpNode struct {
 	RHS node
 }
 
-func (n *cmpNode) Evaluate(s Source) interface{} {
-	lhs := n.LHS.Evaluate(s)
-	rhs := n.RHS.Evaluate(s)
+func (n *cmpNode) Evaluate(ctx context.Context, s Source) interface{} {
+	lhs := n.LHS.Evaluate(ctx, s)
+	rhs := n.RHS.Evaluate(ctx, s)
 	{
 		a, aOK := lhs.(string)
 		b, bOK := rhs.(string)
@@ -310,9 +313,9 @@ func (n *cmpNode) Encode(b *bytes.Buffer) {
 
 type andNode []node
 
-func (n andNode) Evaluate(s Source) interface{} {
+func (n andNode) Evaluate(ctx context.Context, s Source) interface{} {
 	for _, current := range n {
-		value, ok := current.Evaluate(s).(bool)
+		value, ok := current.Evaluate(ctx, s).(bool)
 		if !ok {
 			re("AND must have boolean arguments")
 		}
@@ -336,9 +339,9 @@ func (n andNode) Encode(b *bytes.Buffer) {
 
 type orNode []node
 
-func (n orNode) Evaluate(s Source) interface{} {
+func (n orNode) Evaluate(ctx context.Context, s Source) interface{} {
 	for _, current := range n {
-		value, ok := current.Evaluate(s).(bool)
+		value, ok := current.Evaluate(ctx, s).(bool)
 		if !ok {
 			re("OR must have boolean arguments")
 		}
@@ -366,15 +369,15 @@ type ifNode struct {
 	False node
 }
 
-func (n *ifNode) Evaluate(s Source) interface{} {
-	cond, ok := n.Cond.Evaluate(s).(bool)
+func (n *ifNode) Evaluate(ctx context.Context, s Source) interface{} {
+	cond, ok := n.Cond.Evaluate(ctx, s).(bool)
 	if !ok {
 		re("IF condition must be boolean")
 	}
 	if cond {
-		return n.True.Evaluate(s)
+		return n.True.Evaluate(ctx, s)
 	}
-	return n.False.Evaluate(s)
+	return n.False.Evaluate(ctx, s)
 }
 
 func (n *ifNode) Encode(b *bytes.Buffer) {

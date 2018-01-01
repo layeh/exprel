@@ -1,18 +1,46 @@
 package exprel // import "layeh.com/exprel"
 
 import (
+	"context"
 	"strconv"
+	"time"
 )
 
 // Func is a function that can be executed from an Expression.
 type Func func(call *Call) (interface{}, error)
 
 // Call contains information about an expression function call.
+//
+// Call implements context.Context.
 type Call struct {
 	// The name used to invoke the function.
 	Name string
 	// The arguments passed to the function.
 	Values []interface{}
+
+	ctx context.Context
+}
+
+var _ context.Context = (*Call)(nil)
+
+// Deadline implements context.Context.
+func (c *Call) Deadline() (deadline time.Time, ok bool) {
+	return c.ctx.Deadline()
+}
+
+// Done implements context.Context.
+func (c *Call) Done() <-chan struct{} {
+	return c.ctx.Done()
+}
+
+// Err implements context.Context.
+func (c *Call) Err() error {
+	return c.ctx.Err()
+}
+
+// Value implements context.Context.
+func (c *Call) Value(key interface{}) interface{} {
+	return c.ctx.Value(key)
 }
 
 // String returns the ith argument, iff it is a string. Otherwise, the function

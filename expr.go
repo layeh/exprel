@@ -2,6 +2,7 @@ package exprel // import "layeh.com/exprel"
 
 import (
 	"bytes"
+	"context"
 	"errors"
 )
 
@@ -33,11 +34,16 @@ func Parse(s string) (*Expression, error) {
 	}, nil
 }
 
-// Evaluate evaluates the expression with the given source.
+// Evaluate is a wrapper around EvaluateContext that uses the background context.
+func (e *Expression) Evaluate(s Source) (val interface{}, err error) {
+	return e.EvaluateContext(context.Background(), s)
+}
+
+// EvaluateContext evaluates the expression with the given source.
 //
 // Upon success, value and nil are returned. Upon failure, nil and error are
 // returned.
-func (e *Expression) Evaluate(s Source) (val interface{}, err error) {
+func (e *Expression) EvaluateContext(ctx context.Context, s Source) (val interface{}, err error) {
 	defer func() {
 		if rec := recover(); rec != nil {
 			if runtimeErr, ok := rec.(*RuntimeError); ok {
@@ -47,7 +53,7 @@ func (e *Expression) Evaluate(s Source) (val interface{}, err error) {
 			panic(rec)
 		}
 	}()
-	return e.node.Evaluate(s), nil
+	return e.node.Evaluate(ctx, s), nil
 }
 
 // MarshalText implements encoding.TextMarshaler.
@@ -72,12 +78,17 @@ func (e *Expression) UnmarshalText(text []byte) error {
 	return nil
 }
 
-// Evaluate parses the given string and evaluates it with the given sources
+// Evaluate is a wrapper around EvaluateContext that uses the background context.
+func Evaluate(s string, source ...Source) (val interface{}, err error) {
+	return EvaluateContext(context.Background(), s, source...)
+}
+
+// EvaluateContext parses the given string and evaluates it with the given sources
 // (Base is automatically included).
 //
 // Upon success, value and nil are returned. Upon failure, nil and error are
 // returned.
-func Evaluate(s string, source ...Source) (val interface{}, err error) {
+func EvaluateContext(ctx context.Context, s string, source ...Source) (val interface{}, err error) {
 	expr, err := Parse(s)
 	if err != nil {
 		return nil, err
@@ -85,7 +96,7 @@ func Evaluate(s string, source ...Source) (val interface{}, err error) {
 	data := make(Sources, len(source)+1)
 	data[0] = Base
 	copy(data[1:], source)
-	result, err := expr.Evaluate(data)
+	result, err := expr.EvaluateContext(ctx, data)
 	if err != nil {
 		return nil, err
 	}
