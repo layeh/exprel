@@ -24,7 +24,8 @@ func main() {
 		}
 		result, err := expr.Evaluate(exprel.Base)
 		if err != nil {
-			fmt.Printf("error: %s\n", err)
+			fmt.Fprintf(os.Stderr, "error: %s\n", err)
+			os.Exit(1)
 		}
 		fmt.Println(result)
 	}
