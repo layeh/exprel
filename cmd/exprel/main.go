@@ -26,13 +26,6 @@ func main() {
 		if err != nil {
 			fmt.Printf("error: %s\n", err)
 		}
-		switch result.(type) {
-		case string:
-			fmt.Printf("string: %v\n", result)
-		case bool:
-			fmt.Printf("bool: %v\n", result)
-		case float64:
-			fmt.Printf("number: %v\n", result)
-		}
+		fmt.Println(result)
 	}
 }
