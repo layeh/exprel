@@ -6,7 +6,7 @@ import (
 )
 
 // Func is a function that can be executed from an Expression.
-type Func func(call *Call) (interface{}, error)
+type Func = func(call *Call) (interface{}, error)
 
 // Call contains information about an expression function call.
 //
@@ -143,7 +143,7 @@ func (m SourceMap) Get(name string) (interface{}, bool) {
 		return nil, false
 	}
 	switch value.(type) {
-	case bool, string, float64, Func, func(*Call) (interface{}, error):
+	case bool, string, float64, Func:
 		return value, true
 	default:
 		return nil, false

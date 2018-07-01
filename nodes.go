@@ -97,11 +97,7 @@ func (n *callNode) Evaluate(ctx context.Context, s Source) interface{} {
 	}
 	fn, ok := fnValue.(Func)
 	if !ok {
-		fn2, ok2 := fnValue.(func(*Call) (interface{}, error))
-		if !ok2 {
-			re("cannot call non-function " + name)
-		}
-		fn = fn2
+		re("cannot call non-function " + name)
 	}
 	call := Call{
 		Name:   name,
