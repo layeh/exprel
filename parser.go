@@ -1,4 +1,4 @@
-package exprel // import "layeh.com/exprel"
+package exprel
 
 const maximumDepth = 1024
 
