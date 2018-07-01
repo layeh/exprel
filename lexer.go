@@ -9,25 +9,25 @@ import (
 type identifier string
 
 const (
-	tknAdd      rune = '+'
-	tknSubtract rune = '-'
-	tknMultiply rune = '*'
-	tknDivide   rune = '/'
-	tknPower    rune = '^'
-	tknModulo   rune = '%'
-	tknConcat   rune = '&'
+	tknAdd      = '+'
+	tknSubtract = '-'
+	tknMultiply = '*'
+	tknDivide   = '/'
+	tknPower    = '^'
+	tknModulo   = '%'
+	tknConcat   = '&'
 
-	tknEquals       rune = '='
-	tknGreater      rune = '>'
-	tknGreaterEqual rune = '≥'
-	tknLess         rune = '<'
-	tknLessEqual    rune = '≤'
-	tknInequal      rune = '≠'
+	tknEquals       = '='
+	tknGreater      = '>'
+	tknGreaterEqual = '≥'
+	tknLess         = '<'
+	tknLessEqual    = '≤'
+	tknInequal      = '≠'
 
-	tknSep rune = ';'
+	tknSep = ';'
 
-	tknOpen  rune = '('
-	tknClose rune = ')'
+	tknOpen  = '('
+	tknClose = ')'
 )
 
 type lexer struct {
