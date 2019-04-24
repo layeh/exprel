@@ -74,6 +74,11 @@ func TestNumberExpression(t *testing.T) {
 	testNumber(t, expr, 5+5*2/0.5, nil)
 }
 
+func TestNumberExpression_issue3(t *testing.T) {
+	expr := `=6*32+1`
+	testNumber(t, expr, 6*32+1, nil)
+}
+
 func TestSimpleIf(t *testing.T) {
 	expr := `=IF(TRUE();FALSE();2)`
 	testBool(t, expr, false, nil)
