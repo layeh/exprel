@@ -1,4 +1,4 @@
-# exprel
+# exprel [![GoDoc](https://godoc.org/layeh.com/exprel?status.svg)](https://godoc.org/layeh.com/exprel)
 
 Package exprel provides a Spreadsheet-like expression evaluator.
 
