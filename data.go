@@ -9,8 +9,6 @@ import (
 type Func = func(call *Call) (interface{}, error)
 
 // Call contains information about an expression function call.
-//
-// Call implements context.Context.
 type Call struct {
 	// The name used to invoke the function.
 	Name string
