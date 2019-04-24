@@ -74,7 +74,7 @@ var baseSource = SourceMap{
 		for _, v := range c.Values {
 			code, ok := v.(float64)
 			if !ok {
-				panic(&RuntimeError{Message: "CHAR argument must be float64"})
+				panic(&RuntimeError{Message: "CHAR argument must be number"})
 			}
 			r = append(r, rune(code))
 		}

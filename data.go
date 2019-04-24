@@ -54,11 +54,11 @@ func (c *Call) OptString(i int, def string) string {
 // function panics with a *RuntimeError.
 func (c *Call) Number(i int) float64 {
 	if len(c.Values) <= i {
-		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be float64"})
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be number"})
 	}
 	value, ok := c.Values[i].(float64)
 	if !ok {
-		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be float64"})
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be number"})
 	}
 	return value
 }
@@ -72,7 +72,7 @@ func (c *Call) OptNumber(i int, def float64) float64 {
 	}
 	value, ok := c.Values[i].(float64)
 	if !ok {
-		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be float64"})
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be number"})
 	}
 	return value
 }
