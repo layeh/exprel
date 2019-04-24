@@ -111,16 +111,12 @@ type Source interface {
 }
 
 // EmptySource is a Source that contains no values.
-var EmptySource Source
+var EmptySource Source = emptySource{}
 
 type emptySource struct{}
 
 func (emptySource) Get(name string) (interface{}, bool) {
 	return nil, false
-}
-
-func init() {
-	EmptySource = emptySource{}
 }
 
 // SourceFunc is a Source that looks up an identifier via a function.
