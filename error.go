@@ -11,7 +11,6 @@ type SyntaxError struct {
 	Position int
 }
 
-// Implements error.Error.
 func (e *SyntaxError) Error() string {
 	return fmt.Sprintf("exprel: syntax error near index %d: %s", e.Position, e.Message)
 }
@@ -23,7 +22,6 @@ type RuntimeError struct {
 	Err     error
 }
 
-// Implements error.Error.
 func (e *RuntimeError) Error() string {
 	if e.Err != nil {
 		return fmt.Sprintf("exprel: runtime error: %s", e.Err.Error())
