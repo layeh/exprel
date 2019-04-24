@@ -58,7 +58,7 @@
 //  Equality          a = b              string, number, boolean
 //  Inequality        a <> b             string, number, boolean
 //  Greater than      a > b              string, number
-//  Greater or equal  a > b              string, number
+//  Greater or equal  a >= b             string, number
 //  Less than         a < b              string, number
 //  Less or equal     a <= b             string, number
 //
