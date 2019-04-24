@@ -27,11 +27,11 @@ func (c *Call) Context() context.Context {
 // panics with a *RuntimeError.
 func (c *Call) String(i int) string {
 	if len(c.Values) <= i {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be string"})
 	}
 	value, ok := c.Values[i].(string)
 	if !ok {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be string"})
 	}
 	return value
 }
@@ -45,7 +45,7 @@ func (c *Call) OptString(i int, def string) string {
 	}
 	value, ok := c.Values[i].(string)
 	if !ok {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be string")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be string"})
 	}
 	return value
 }
@@ -54,11 +54,11 @@ func (c *Call) OptString(i int, def string) string {
 // function panics with a *RuntimeError.
 func (c *Call) Number(i int) float64 {
 	if len(c.Values) <= i {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be float64"})
 	}
 	value, ok := c.Values[i].(float64)
 	if !ok {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be float64"})
 	}
 	return value
 }
@@ -72,7 +72,7 @@ func (c *Call) OptNumber(i int, def float64) float64 {
 	}
 	value, ok := c.Values[i].(float64)
 	if !ok {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be float64")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be float64"})
 	}
 	return value
 }
@@ -81,11 +81,11 @@ func (c *Call) OptNumber(i int, def float64) float64 {
 // panics with a *RuntimeError.
 func (c *Call) Boolean(i int) bool {
 	if len(c.Values) <= i {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be bool"})
 	}
 	value, ok := c.Values[i].(bool)
 	if !ok {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be bool"})
 	}
 	return value
 }
@@ -99,7 +99,7 @@ func (c *Call) OptBoolean(i int, def bool) bool {
 	}
 	value, ok := c.Values[i].(bool)
 	if !ok {
-		re(c.Name + " expects argument " + strconv.Itoa(i) + " to be bool")
+		panic(&RuntimeError{Message: c.Name + " expects argument " + strconv.Itoa(i) + " to be bool"})
 	}
 	return value
 }

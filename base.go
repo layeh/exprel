@@ -18,13 +18,13 @@ func init() {
 			rest := c.Values[1:]
 			index := int(number)
 			if index < 0 || index >= len(rest) {
-				re("CHOOSE index out of range")
+				panic(&RuntimeError{Message: "CHOOSE index out of range"})
 			}
 			return rest[index], nil
 		},
 		"TYPE": func(c *Call) (interface{}, error) {
 			if len(c.Values) < 1 {
-				re("TYPE requires one argument")
+				panic(&RuntimeError{Message: "TYPE requires one argument"})
 			}
 			switch c.Values[0].(type) {
 			case float64:
@@ -78,7 +78,7 @@ func init() {
 			for _, v := range c.Values {
 				code, ok := v.(float64)
 				if !ok {
-					re("CHAR argument must be float64")
+					panic(&RuntimeError{Message: "CHAR argument must be float64"})
 				}
 				r = append(r, rune(code))
 			}
@@ -90,7 +90,7 @@ func init() {
 			for i, v := range c.Values[1:] {
 				str, ok := v.(string)
 				if !ok {
-					re("JOIN arguments must be string")
+					panic(&RuntimeError{Message: "JOIN arguments must be string"})
 				}
 				if i > 0 {
 					buff.WriteString(sep)
@@ -131,7 +131,7 @@ func init() {
 			str := c.String(0)
 			count := c.Number(1)
 			if count < 0 {
-				re("REPT argument must be positive")
+				panic(&RuntimeError{Message: "REPT argument must be positive"})
 			}
 			return strings.Repeat(str, int(count)), nil
 		},

@@ -28,7 +28,3 @@ func (e *RuntimeError) Error() string {
 	}
 	return fmt.Sprintf("exprel: runtime error: %s", e.Message)
 }
-
-func re(message string) {
-	panic(&RuntimeError{Message: message})
-}

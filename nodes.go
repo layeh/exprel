@@ -53,7 +53,7 @@ type notNode struct {
 func (n *notNode) Evaluate(ctx context.Context, s Source) interface{} {
 	val, ok := n.node.Evaluate(ctx, s).(bool)
 	if !ok {
-		re("NOT expects bool value")
+		panic(&RuntimeError{Message: "NOT expects bool value"})
 	}
 	return !val
 }
@@ -70,12 +70,12 @@ func (n lookupNode) Evaluate(ctx context.Context, s Source) interface{} {
 	id := string(n)
 	ret, ok := s.Get(id)
 	if !ok {
-		re("unknown identifier " + id)
+		panic(&RuntimeError{Message: "unknown identifier " + id})
 	}
 	switch ret.(type) {
 	case string, bool, float64:
 	default:
-		re("identifier '" + id + "' has invalid type")
+		panic(&RuntimeError{Message: "identifier '" + id + "' has invalid type"})
 	}
 	return ret
 }
@@ -93,11 +93,11 @@ func (n *callNode) Evaluate(ctx context.Context, s Source) interface{} {
 	name := n.Name
 	fnValue, ok := s.Get(name)
 	if !ok {
-		re("unknown function " + name)
+		panic(&RuntimeError{Message: "unknown function " + name})
 	}
 	fn, ok := fnValue.(Func)
 	if !ok {
-		re("cannot call non-function " + name)
+		panic(&RuntimeError{Message: "cannot call non-function " + name})
 	}
 	call := Call{
 		Name:   name,
@@ -116,9 +116,8 @@ func (n *callNode) Evaluate(ctx context.Context, s Source) interface{} {
 	case string, bool, float64:
 		return ret
 	default:
-		re("invalid function return type")
+		panic(&RuntimeError{Message: "invalid function return type"})
 	}
-	panic("never called")
 }
 
 func (n *callNode) Encode(b *bytes.Buffer) {
@@ -138,11 +137,11 @@ type concatNode [2]node
 func (n concatNode) Evaluate(ctx context.Context, s Source) interface{} {
 	lhs, lhsOk := n[0].Evaluate(ctx, s).(string)
 	if !lhsOk {
-		re("LHS of & must be string")
+		panic(&RuntimeError{Message: "LHS of & must be string"})
 	}
 	rhs, rhsOk := n[1].Evaluate(ctx, s).(string)
 	if !rhsOk {
-		re("RHS of & must be string")
+		panic(&RuntimeError{Message: "RHS of & must be string"})
 	}
 	return lhs + rhs
 }
@@ -163,7 +162,7 @@ func (n *mathNode) Evaluate(ctx context.Context, s Source) interface{} {
 	lhs, lhsOK := n.LHS.Evaluate(ctx, s).(float64)
 	rhs, rhsOK := n.RHS.Evaluate(ctx, s).(float64)
 	if !lhsOK || !rhsOK {
-		re("invalid " + string(n.Op) + " operands")
+		panic(&RuntimeError{Message: "invalid " + string(n.Op) + " operands"})
 	}
 	switch n.Op {
 	case tknAdd:
@@ -174,7 +173,7 @@ func (n *mathNode) Evaluate(ctx context.Context, s Source) interface{} {
 		return lhs * rhs
 	case tknDivide:
 		if rhs == 0 {
-			re("attempted division by zero")
+			panic(&RuntimeError{Message: "attempted division by zero"})
 		}
 		return lhs / rhs
 	case tknPower:
@@ -233,8 +232,7 @@ func (n *eqNode) Evaluate(ctx context.Context, s Source) interface{} {
 			return a != b
 		}
 	}
-	re("mismatched comparison operand types")
-	panic("never called")
+	panic(&RuntimeError{Message: "mismatched comparison operand types"})
 }
 
 func (n *eqNode) Encode(b *bytes.Buffer) {
@@ -286,8 +284,7 @@ func (n *cmpNode) Evaluate(ctx context.Context, s Source) interface{} {
 			}
 		}
 	}
-	re("mismatched comparison operand types")
-	panic("never called")
+	panic(&RuntimeError{Message: "mismatched comparison operand types"})
 }
 
 func (n *cmpNode) Encode(b *bytes.Buffer) {
@@ -313,7 +310,7 @@ func (n andNode) Evaluate(ctx context.Context, s Source) interface{} {
 	for _, current := range n {
 		value, ok := current.Evaluate(ctx, s).(bool)
 		if !ok {
-			re("AND must have boolean arguments")
+			panic(&RuntimeError{Message: "AND must have boolean arguments"})
 		}
 		if !value {
 			return false
@@ -339,7 +336,7 @@ func (n orNode) Evaluate(ctx context.Context, s Source) interface{} {
 	for _, current := range n {
 		value, ok := current.Evaluate(ctx, s).(bool)
 		if !ok {
-			re("OR must have boolean arguments")
+			panic(&RuntimeError{Message: "OR must have boolean arguments"})
 		}
 		if value {
 			return true
@@ -368,7 +365,7 @@ type ifNode struct {
 func (n *ifNode) Evaluate(ctx context.Context, s Source) interface{} {
 	cond, ok := n.Cond.Evaluate(ctx, s).(bool)
 	if !ok {
-		re("IF condition must be boolean")
+		panic(&RuntimeError{Message: "IF condition must be boolean"})
 	}
 	if cond {
 		return n.True.Evaluate(ctx, s)
