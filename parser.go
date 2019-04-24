@@ -117,7 +117,7 @@ func (p *parser) parseExpression() node {
 
 /*
  * BIN1        BIN2
- *             BIN2 ["+" | "-" | "&" ] EXPRESSION
+ *             BIN2 ["+" | "-" | "&" ] BIN1
  */
 func (p *parser) parseBin1() node {
 	lhs := p.do(p.parseBin2)
@@ -125,11 +125,11 @@ func (p *parser) parseBin1() node {
 		switch r {
 		case tknAdd, tknSubtract:
 			p.next()
-			rhs := p.do(p.parseExpression)
+			rhs := p.do(p.parseBin1)
 			return &mathNode{r, lhs, rhs}
 		case tknConcat:
 			p.next()
-			rhs := p.do(p.parseExpression)
+			rhs := p.do(p.parseBin1)
 			return concatNode{lhs, rhs}
 		}
 	}
@@ -138,7 +138,7 @@ func (p *parser) parseBin1() node {
 
 /*
  * BIN2        TERM
- *             TERM ["*" | "/" | "^" | "%" ] EXPRESSION
+ *             TERM ["*" | "/" | "^" | "%" ] BIN2
  */
 func (p *parser) parseBin2() node {
 	lhs := p.do(p.parseTerm)
@@ -146,7 +146,7 @@ func (p *parser) parseBin2() node {
 		switch r {
 		case tknMultiply, tknDivide, tknPower, tknModulo:
 			p.next()
-			rhs := p.do(p.parseExpression)
+			rhs := p.do(p.parseBin2)
 			return &mathNode{r, lhs, rhs}
 		}
 	}
