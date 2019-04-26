@@ -69,6 +69,8 @@ func (l *lexer) pos() int {
 //  float64    -> Number
 //  rune       -> Token
 func (l *lexer) Next() interface{} {
+	l.skipWhitespace()
+
 	if l.R.Len() == 0 {
 		// empty reader
 		panic(&SyntaxError{
@@ -76,7 +78,6 @@ func (l *lexer) Next() interface{} {
 			Position: l.pos(),
 		})
 	}
-	defer l.skipWhitespace()
 
 	r, _, _ := l.R.ReadRune()
 	switch {
