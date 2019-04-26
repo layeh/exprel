@@ -16,7 +16,7 @@ Example expressions which exprel can evaluate:
 
 Documentation is provided through the package's godoc. The documentation can be viewed online at [godoc.org](https://godoc.org/layeh.com/exprel).
 
-# License
+## License
 
 [MPL 2.0](https://www.mozilla.org/en-US/MPL/2.0/)
 
