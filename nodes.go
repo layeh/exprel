@@ -68,7 +68,12 @@ type lookupNode string
 
 func (n lookupNode) Evaluate(ctx context.Context, s Source) interface{} {
 	id := string(n)
-	ret, ok := s.Get(id)
+	ret, ok := s.Get(ctx, id)
+	select {
+	case <-ctx.Done():
+		panic(&RuntimeError{Err: ctx.Err()})
+	default:
+	}
 	if !ok {
 		panic(&RuntimeError{Message: "unknown identifier " + id})
 	}
@@ -91,7 +96,13 @@ type callNode struct {
 
 func (n *callNode) Evaluate(ctx context.Context, s Source) interface{} {
 	name := n.Name
-	fnValue, ok := s.Get(name)
+	fnValue, ok := s.Get(ctx, name)
+	select {
+	case <-ctx.Done():
+		panic(&RuntimeError{Err: ctx.Err()})
+	default:
+	}
+
 	if !ok {
 		panic(&RuntimeError{Message: "unknown function " + name})
 	}

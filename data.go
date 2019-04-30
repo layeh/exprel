@@ -107,7 +107,7 @@ func (c *Call) OptBoolean(i int, def bool) bool {
 // Source is a source of data for an expression. Get is called when an
 // identifier needs to be evaluated.
 type Source interface {
-	Get(name string) (value interface{}, ok bool)
+	Get(ctx context.Context, name string) (value interface{}, ok bool)
 }
 
 // EmptySource is a Source that contains no values.
@@ -115,23 +115,23 @@ var EmptySource Source = emptySource{}
 
 type emptySource struct{}
 
-func (emptySource) Get(name string) (interface{}, bool) {
+func (emptySource) Get(ctx context.Context, name string) (interface{}, bool) {
 	return nil, false
 }
 
 // SourceFunc is a Source that looks up an identifier via a function.
-type SourceFunc func(name string) (value interface{}, ok bool)
+type SourceFunc func(ctx context.Context, name string) (value interface{}, ok bool)
 
 // Get implements Source.
-func (f SourceFunc) Get(name string) (interface{}, bool) {
-	return f(name)
+func (f SourceFunc) Get(ctx context.Context, name string) (interface{}, bool) {
+	return f(ctx, name)
 }
 
 // SourceMap is a Source that looks up an identifier in a map.
 type SourceMap map[string]interface{}
 
 // Get implements Source.
-func (m SourceMap) Get(name string) (interface{}, bool) {
+func (m SourceMap) Get(ctx context.Context, name string) (interface{}, bool) {
 	value, ok := m[name]
 	if !ok {
 		return nil, false
@@ -149,9 +149,9 @@ func (m SourceMap) Get(name string) (interface{}, bool) {
 type Sources []Source
 
 // Get implements Source.
-func (s Sources) Get(name string) (interface{}, bool) {
+func (s Sources) Get(ctx context.Context, name string) (interface{}, bool) {
 	for _, s := range s {
-		value, ok := s.Get(name)
+		value, ok := s.Get(ctx, name)
 		if ok {
 			return value, true
 		}
