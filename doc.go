@@ -45,7 +45,7 @@
 // Operators
 //
 // The following operators and built-ins are defined:
-//                    Usage              Notes
+//                    Usage              Types
 //  ------------------------------------------
 //  Addition          a + b              number
 //  Subtraction       a - b              number
@@ -62,11 +62,11 @@
 //  Less than         a < b              string, number
 //  Less or equal     a <= b             string, number
 //
-//  Logical AND       AND(bool...)       Operands lazily evaluated
-//  Logical OR        OR(bool...)        Operands lazily evaluated
-//  Logical NOT       NOT(bool)          Operands lazily evaluated
+//  Logical AND       AND(bool...)
+//  Logical OR        OR(bool...)
+//  Logical NOT       NOT(bool)
 //
-//  Condition         IF(bool;ANY;ANY)   Lazily evaluated
+//  Condition         IF(bool;ANY;ANY)
 //
 //  Boolean true      TRUE()
 //  Boolean false     FALSE()
